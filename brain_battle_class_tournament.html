@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain Battle — Class Tournament</title>
+<style>
+:root{--bg:#0b1020;--panel:#141d33;--panel2:#1b2945;--line:#2c3c5d;--text:#f4f7ff;--muted:#aab7d0;--blue:#48a5ff;--orange:#ff9b45;--green:#42d69a;--red:#ff657a;--gold:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0%,#1a2c50 0,transparent 35%),radial-gradient(circle at 90% 10%,#35214c 0,transparent 30%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}button{cursor:pointer;border:0;color:inherit}.app{max-width:1200px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.08em}.logo{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),#9166ff);font-size:24px;box-shadow:0 8px 28px #3979ff44}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.2em;margin-top:2px}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.ghost,.music{background:#182541;border:1px solid var(--line);padding:10px 14px;border-radius:12px;font-weight:700}.music.active{border-color:var(--green);color:var(--green)}.screen{display:none;animation:rise .3s ease}.screen.active{display:block}@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}.hero{text-align:center;padding:42px 18px 30px}.eyebrow{color:var(--green);font-size:12px;font-weight:900;letter-spacing:.2em}.hero h1{font-size:clamp(42px,8vw,82px);line-height:.95;margin:14px 0 12px;letter-spacing:-.06em}.hero h1 span{background:linear-gradient(90deg,#5bb5ff,#bd8cff,#ffad67);-webkit-background-clip:text;background-clip:text;color:transparent}.sub{color:var(--muted);max-width:650px;margin:0 auto 24px;line-height:1.6}.primary{background:linear-gradient(110deg,#328fff,#765bff);padding:14px 24px;border-radius:14px;font-weight:900;box-shadow:0 10px 30px #4d76ff3b}.primary:hover{filter:brightness(1.1);transform:translateY(-1px)}.secondary{background:#243453;border:1px solid var(--line);padding:12px 18px;border-radius:12px;font-weight:800}.section-title{font-size:24px;margin:8px 0 6px}.hint{color:var(--muted);margin:0 0 20px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.tile{background:linear-gradient(145deg,#192744,#121b30);border:1px solid var(--line);border-radius:18px;padding:20px;text-align:left;min-height:138px;transition:.18s}.tile:hover{transform:translateY(-3px);border-color:#668ac8}.tile .emoji{font-size:30px}.tile strong{display:block;font-size:18px;margin:10px 0 4px}.tile small{color:var(--muted);line-height:1.4}.tile.selected{border:2px solid var(--green);background:#183448}.levels{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.level{border:1px solid var(--line);border-radius:16px;background:#172440;padding:18px 8px;text-align:center}.level b{display:block;font-size:28px;color:var(--gold)}.level span{font-size:12px;color:var(--muted)}.level.selected{border:2px solid var(--green);background:#183c3b}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:8px}.field input{width:100%;padding:14px 15px;border-radius:12px;border:1px solid var(--line);background:#101a2e;color:white;outline:none}.field input:focus{border-color:var(--blue)}.center{text-align:center}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}.pill{display:inline-flex;padding:7px 11px;border-radius:999px;background:#1e3150;color:#bcd5ff;font-size:12px;font-weight:800}.match-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0 18px}.progress{height:8px;background:#1d2b46;border-radius:99px;overflow:hidden;margin:12px 0 20px}.progress div{height:100%;background:linear-gradient(90deg,var(--blue),#a67bff);width:0;transition:width .3s}.players{display:grid;grid-template-columns:1fr 1fr;gap:14px}.player{border:1px solid var(--line);background:#14213a;border-radius:18px;padding:18px;min-width:0}.player.blue{box-shadow:inset 0 3px 0 var(--blue)}.player.orange{box-shadow:inset 0 3px 0 var(--orange)}.player-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.player-name{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.score{font-size:26px;font-weight:950}.blue .score{color:var(--blue)}.orange .score{color:var(--orange)}.questionbox{margin:16px 0 20px;text-align:center;background:linear-gradient(145deg,#1c2b49,#17213a);border:1px solid var(--line);padding:24px;border-radius:20px}.qmeta{color:var(--green);font-size:12px;font-weight:900;letter-spacing:.14em}.question{font-size:clamp(20px,3vw,30px);font-weight:850;line-height:1.3;margin:12px auto;max-width:850px}.timer{font-size:30px;font-weight:950;color:var(--gold)}.answers{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.answer{background:#223454;border:1px solid #35496c;border-radius:12px;padding:13px 10px;text-align:left;font-weight:750;min-height:54px}.answer:hover:not(:disabled){background:#2c4772}.answer:disabled{opacity:.65;cursor:default}.answer.chosen{outline:2px solid var(--gold);background:#4a3d2a}.answer.correct{background:#14513f;border-color:var(--green)}.answer.wrong{background:#552638;border-color:var(--red)}.feedback{min-height:24px;margin-top:10px;color:var(--muted);font-size:13px}.player .tag{font-size:10px;letter-spacing:.13em;font-weight:900;color:var(--muted)}.result-card{max-width:700px;margin:24px auto;background:#162541;border:1px solid var(--line);border-radius:22px;padding:28px;text-align:center}.winner{font-size:42px;margin:10px}.result-scores{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.result-score{padding:18px;border-radius:14px;background:#213250}.result-score b{display:block;font-size:30px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:#131f36}table{width:100%;border-collapse:collapse;min-width:520px}th,td{padding:13px 15px;text-align:left;border-bottom:1px solid #293957}th{color:#aebdd6;font-size:12px;text-transform:uppercase;letter-spacing:.08em}tr:last-child td{border-bottom:0}.rank{font-weight:950;color:var(--gold)}.empty{color:var(--muted);text-align:center;padding:24px}.footer-note{color:#8090ad;font-size:12px;text-align:center;margin:26px 0 8px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#243654;border:1px solid #52698f;padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.2s;z-index:5}.toast.show{opacity:1}.modal{position:fixed;inset:0;background:#050914cc;display:none;place-items:center;padding:20px;z-index:10}.modal.show{display:grid}.modalbox{max-width:480px;width:100%;background:#182744;border:1px solid var(--line);padding:24px;border-radius:20px}.modalbox h3{margin-top:0}@media(max-width:760px){.app{padding:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.players{grid-template-columns:1fr}.levels{grid-template-columns:repeat(3,1fr)}.formrow{grid-template-columns:1fr}.hero{padding-top:28px}.questionbox{padding:18px}.top{align-items:flex-start}.brand small{display:none}}@media(max-width:420px){.grid{grid-template-columns:1fr}.answers{grid-template-columns:1fr}.levels{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+ <div class="brand"><div class="logo">⚡</div><div>BRAIN BATTLE<small>CLASS TOURNAMENT</small></div></div>
+ <div class="top-actions"><button class="music" id="musicBtn" onclick="toggleMusic()">♫ Musik: OFF</button><button class="ghost" onclick="showLeaderboard()">🏆 Klasemen</button></div>
+</header>
+
+<section id="home" class="screen active">
+ <div class="hero"><div class="eyebrow">THINK FAST · PLAY SMART · WIN TOGETHER</div><h1><span>BRAIN</span><br>BATTLE</h1><p class="sub">Arena adu cerdas kelas X! Tantang temanmu, jawab soal secara bersamaan, kumpulkan poin, dan rebut posisi teratas di klasemen kelas.</p><button class="primary" onclick="go('subjects')">MULAI BATTLE&nbsp; →</button></div>
+ <div class="grid">
+  <div class="tile"><div class="emoji">📚</div><strong>6 Mata Pelajaran</strong><small>Matematika, Bahasa, IPA, Informatika, dan Sejarah.</small></div>
+  <div class="tile"><div class="emoji">🎯</div><strong>5 Level Tantangan</strong><small>Dari pemanasan sampai expert dengan soal acak.</small></div>
+  <div class="tile"><div class="emoji">🏆</div><strong>Class Leaderboard</strong><small>Catat hasil pertandingan teman-teman sekelas.</small></div>
+ </div>
+</section>
+
+<section id="subjects" class="screen">
+ <div class="eyebrow">STEP 01 / PILIH KATEGORI</div><h2 class="section-title">Mau adu cerdas di pelajaran apa?</h2><p class="hint">Pilih satu mata pelajaran untuk pertandingan ini.</p>
+ <div class="grid" id="subjectGrid"></div><div class="actions"><button class="secondary" onclick="go('home')">← Kembali</button></div>
+</section>
+
+<section id="levels" class="screen">
+ <div class="eyebrow">STEP 02 / PILIH TANTANGAN</div><h2 class="section-title" id="levelTitle">Pilih level</h2><p class="hint">Semakin tinggi level, semakin menantang pertanyaannya.</p>
+ <div class="levels" id="levelGrid"></div><div class="actions"><button class="secondary" onclick="go('subjects')">← Mata pelajaran</button></div>
+</section>
+
+<section id="players" class="screen">
+ <div class="eyebrow">STEP 03 / SIAPKAN PEMAIN</div><h2 class="section-title">Siapa yang akan bertanding?</h2><p class="hint" id="matchInfo"></p>
+ <div class="formrow">
+  <div class="field"><label>🔵 PLAYER 1</label><input id="p1name" maxlength="22" placeholder="Nama pemain 1" value="Player 1"></div>
+  <div class="field"><label>🟠 PLAYER 2</label><input id="p2name" maxlength="22" placeholder="Nama pemain 2" value="Player 2"></div>
+ </div>
+ <div class="center"><span class="pill">5 SOAL ACAK · 20 DETIK PER SOAL · JAWAB BERSAMAAN</span></div>
+ <div class="actions"><button class="secondary" onclick="go('levels')">← Level</button><button class="primary" onclick="startMatch()">LET'S BATTLE! ⚡</button></div>
+</section>
+
+<section id="game" class="screen">
+ <div class="match-head"><div><span class="pill" id="gameCategory">MATEMATIKA · LEVEL 1</span><div style="font-size:13px;color:var(--muted);margin-top:8px" id="questionCount">SOAL 1 DARI 5</div></div><button class="ghost" onclick="confirmExit()">✕ Keluar</button></div>
+ <div class="progress"><div id="progressBar"></div></div>
+ <div class="questionbox"><div class="qmeta" id="qmeta">QUICK THINKING</div><div class="question" id="questionText">Pertanyaan muncul di sini</div><div class="timer" id="timer">20</div></div>
+ <div class="players">
+  <div class="player blue"><div class="player-head"><div><div class="tag">🔵 PLAYER 1</div><div class="player-name" id="gameP1">Player 1</div></div><div class="score" id="score1">0</div></div><div class="answers" id="answers1"></div><div class="feedback" id="feedback1">Pilih jawabanmu!</div></div>
+  <div class="player orange"><div class="player-head"><div><div class="tag">🟠 PLAYER 2</div><div class="player-name" id="gameP2">Player 2</div></div><div class="score" id="score2">0</div></div><div class="answers" id="answers2"></div><div class="feedback" id="feedback2">Pilih jawabanmu!</div></div>
+ </div>
+ <div class="center" style="margin-top:16px;color:var(--muted);font-size:12px">Kedua pemain menjawab soal yang sama di area masing-masing. Jawaban dikunci setelah dipilih.</div>
+</section>
+
+<section id="result" class="screen">
+ <div class="result-card"><div class="eyebrow">MATCH COMPLETED</div><div class="winner" id="winnerIcon">🏆</div><h2 id="winnerText">Pemenang!</h2><p class="hint" id="resultSub"></p>
+ <div class="result-scores"><div class="result-score"><span id="resName1">Player 1</span><b id="resScore1">0</b><small>poin</small></div><div class="result-score"><span id="resName2">Player 2</span><b id="resScore2">0</b><small>poin</small></div></div>
+ <p id="resultDetail" style="color:var(--muted)"></p>
+ <div class="actions"><button class="secondary" onclick="go('home')">🏠 Menu utama</button><button class="primary" onclick="rematch()">REMATCH ↻</button><button class="secondary" onclick="newMatch()">TANTANG PEMAIN LAIN</button></div>
+ </div>
+</section>
+
+<section id="leaderboard" class="screen">
+ <div class="eyebrow">THE CLASS CHAMPIONSHIP</div><h2 class="section-title">🏆 Class Leaderboard</h2><p class="hint">Peringkat dihitung dari total poin seluruh pertandingan di sesi ini.</p>
+ <div class="table-wrap" id="leaderTable"></div>
+ <div class="actions"><button class="secondary" onclick="go('home')">← Menu utama</button><button class="secondary" onclick="resetBoard()">Reset klasemen</button><button class="primary" onclick="newMatch()">+ Pertandingan baru</button></div>
+</section>
+<div class="footer-note">BRAIN BATTLE · Belajar jadi lebih seru ketika dimainkan bersama.</div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="modalbox"><h3 id="modalTitle">Keluar dari pertandingan?</h3><p id="modalText" style="color:var(--muted)">Progress pertandingan ini akan hilang.</p><div class="actions"><button class="secondary" onclick="closeModal()">Lanjut bermain</button><button class="primary" onclick="exitGame()">Ya, keluar</button></div></div></div>
+<script>
+// Bank soal: 5 pertanyaan per level untuk setiap mata pelajaran (150 soal).
+const BANK = {
+"Matematika": [
+[
+["Hasil dari 18 + 27 adalah ...",["35","45","55","65"],1,"18 + 27 = 45."],
+["Bentuk desimal dari 3/4 adalah ...",["0,25","0,5","0,75","1,25"],2,"3 dibagi 4 sama dengan 0,75."],
+["Berapakah 20% dari 150?",["20","25","30","35"],2,"20% × 150 = 30."],
+["Bilangan prima di bawah ini adalah ...",["21","27","29","33"],2,"29 hanya memiliki faktor 1 dan 29."],
+["Keliling persegi dengan sisi 8 cm adalah ...",["16 cm","24 cm","32 cm","64 cm"],2,"Keliling persegi = 4 × sisi."]
+],
+[
+["Jika x + 12 = 20, nilai x adalah ...",["6","7","8","9"],2,"x = 20 − 12 = 8."],
+["Hasil dari 5² − 3² adalah ...",["8","12","16","25"],2,"25 − 9 = 16."],
+["Perbandingan 2 : 5 senilai dengan ...",["4 : 8","6 : 15","8 : 15","10 : 20"],1,"2 : 5 dikali 3 menjadi 6 : 15."],
+["Rata-rata dari 6, 8, dan 10 adalah ...",["7","8","9","10"],1,"(6 + 8 + 10) ÷ 3 = 8."],
+["Sebuah barang Rp80.000 didiskon 10%. Harga setelah diskon ...",["Rp70.000","Rp72.000","Rp74.000","Rp78.000"],1,"Diskon Rp8.000, jadi Rp72.000."]
+],
+[
+["Jika 3x − 7 = 14, nilai x adalah ...",["5","6","7","8"],2,"3x = 21, sehingga x = 7."],
+["Luas segitiga dengan alas 12 cm dan tinggi 8 cm adalah ...",["40 cm²","48 cm²","60 cm²","96 cm²"],1,"½ × 12 × 8 = 48 cm²."],
+["Median dari data 3, 5, 7, 9, 11 adalah ...",["5","7","8","9"],1,"Nilai tengah adalah 7."],
+["Jika f(x) = 2x + 3, maka f(4) = ...",["8","9","10","11"],3,"2(4) + 3 = 11."],
+["Sebuah dadu dilempar sekali. Peluang muncul angka genap adalah ...",["1/6","1/3","1/2","2/3"],2,"Angka genap ada 3 dari 6 kemungkinan."]
+],
+[
+["Akar-akar persamaan x² − 5x + 6 = 0 adalah ...",["1 dan 6","2 dan 3","−2 dan −3","−1 dan −6"],1,"(x − 2)(x − 3) = 0."],
+["Gradien garis melalui (1,2) dan (3,8) adalah ...",["2","3","4","6"],1,"(8 − 2)/(3 − 1) = 3."],
+["Simpangan rata-rata data 2, 4, 6 dari mean-nya adalah ...",["1","4/3","2","3"],1,"Mean 4; rata-rata |−2|, 0, 2 adalah 4/3."],
+["Jika 2^(x) = 32, maka x = ...",["3","4","5","6"],2,"32 = 2⁵."],
+["Luas lingkaran berjari-jari 7 cm (π = 22/7) adalah ...",["44 cm²","88 cm²","154 cm²","308 cm²"],2,"πr² = 22/7 × 49 = 154."]
+],
+[
+["Jika log₂ 32 = x, nilai x adalah ...",["3","4","5","6"],2,"2⁵ = 32."],
+["Suku ke-10 barisan 4, 7, 10, 13, ... adalah ...",["28","30","31","34"],2,"U10 = 4 + 9 × 3 = 31."],
+["Dari 5 siswa dipilih ketua dan wakil. Banyak susunan berbeda adalah ...",["10","15","20","25"],2,"5 × 4 = 20 susunan."],
+["Nilai maksimum fungsi y = −x² + 6x − 5 adalah ...",["3","4","5","6"],1,"Puncak di x=3, y=4."],
+["Dua dadu dilempar. Peluang jumlah mata dadu 7 adalah ...",["1/12","1/9","1/6","1/3"],2,"Ada 6 pasangan dari 36 kemungkinan, yaitu 1/6."]
+]
+],
+"Bahasa Indonesia": [
+[
+["Gagasan utama dalam paragraf disebut ...",["Kalimat penjelas","Ide pokok","Amanat","Kesimpulan"],1,"Ide pokok adalah inti pembahasan paragraf."],
+["Lawan kata 'optimis' adalah ...",["Semangat","Pesimis","Realistis","Aktif"],1,"Pesimis berarti cenderung berpandangan negatif."],
+["Kalimat yang menggunakan huruf kapital dengan tepat adalah ...",["aku tinggal di bandung.","Aku tinggal di Bandung.","Aku Tinggal di bandung.","aku Tinggal di Bandung."],1,"Nama kota diawali huruf kapital."],
+["Kata baku yang tepat adalah ...",["Resiko","Risiko","Resikko","Resikho"],1,"Bentuk baku menurut KBBI adalah risiko."],
+["Tanda baca untuk mengakhiri kalimat tanya adalah ...",["Titik","Koma","Tanda tanya","Titik dua"],2,"Kalimat tanya diakhiri tanda tanya."]
+],
+[
+["Teks yang bertujuan meyakinkan pembaca dengan argumen disebut ...",["Narasi","Argumentasi","Deskripsi","Prosedur"],1,"Teks argumentasi memuat pendapat dan alasan."],
+["Kalimat efektif adalah kalimat yang ...",["Panjang dan puitis","Jelas, hemat, dan tepat","Memiliki banyak istilah","Selalu memakai majas"],1,"Kalimat efektif menyampaikan gagasan secara tepat dan hemat."],
+["Sinonim kata 'cermat' adalah ...",["Teliti","Lalai","Ragu","Lambat"],0,"Cermat bermakna teliti atau saksama."],
+["Bagian teks prosedur yang berisi urutan tindakan disebut ...",["Tujuan","Alat","Langkah-langkah","Penegasan"],2,"Langkah-langkah menjelaskan tahapan melakukan sesuatu."],
+["Kalimat 'Angin berbisik di antara pepohonan' menggunakan majas ...",["Hiperbola","Personifikasi","Litotes","Ironi"],1,"Angin diberi sifat manusia, yaitu berbisik."]
+],
+[
+["Pernyataan yang dapat dibuktikan kebenarannya disebut ...",["Opini","Fakta","Hipotesis","Saran"],1,"Fakta dapat diverifikasi dengan bukti."],
+["Dalam teks eksposisi, bagian yang memuat pendapat awal penulis disebut ...",["Tesis","Argumentasi","Rekomendasi","Koda"],0,"Tesis menyatakan posisi atau pendapat penulis."],
+["Kata penghubung sebab-akibat adalah ...",["Namun","Sedangkan","Karena","Meskipun"],2,"Karena menyatakan hubungan sebab."],
+["Tujuan utama resensi adalah ...",["Menceritakan pengalaman pribadi","Menilai suatu karya","Memberi petunjuk","Melaporkan peristiwa"],1,"Resensi berisi ulasan atau penilaian karya."],
+["Kalimat yang termasuk opini adalah ...",["Air mendidih pada 100°C di tekanan 1 atm","Indonesia memiliki dua musim","Menurut saya, novel itu sangat menarik","Proklamasi dibacakan 17 Agustus 1945"],2,"Pernyataan tersebut merupakan penilaian pribadi."]
+],
+[
+["Unsur intrinsik yang menunjukkan tempat dan waktu cerita adalah ...",["Tema","Alur","Latar","Amanat"],2,"Latar mencakup tempat, waktu, dan suasana."],
+["Sudut pandang orang pertama biasanya ditandai penggunaan kata ...",["Dia","Mereka","Aku","Beliau"],2,"Kata aku atau saya menandai orang pertama."],
+["Kalimat 'Para siswa-siswa sedang belajar' tidak efektif karena ...",["Tidak memiliki subjek","Pemborosan bentuk jamak","Tidak ada predikat","Salah tanda baca"],1,"Kata para dan pengulangan siswa sama-sama menandai jamak."],
+["Dalam debat, argumen yang baik harus didukung oleh ...",["Volume suara","Data dan alasan logis","Serangan pribadi","Tepuk tangan"],1,"Data dan penalaran memperkuat argumen."],
+["Makna konotatif adalah makna ...",["Sebenarnya/lugas","Kias atau tambahan rasa","Dalam kamus saja","Berlawanan"],1,"Konotasi mengandung makna tambahan atau kias."]
+],
+[
+["Kritik sastra yang kuat sebaiknya disampaikan dengan ...",["Celaan tanpa alasan","Penilaian objektif disertai bukti teks","Pendapat populer saja","Ringkasan seluruh cerita"],1,"Kritik perlu alasan dan bukti yang relevan."],
+["Kalimat 'Meskipun hujan deras, pertandingan tetap berlangsung' memiliki hubungan ...",["Sebab","Pertentangan/konsesif","Tujuan","Perbandingan"],1,"Meskipun menyatakan keadaan yang berlawanan dengan hasil."],
+["Perubahan bunyi atau bentuk kata karena proses pembentukan kata dipelajari dalam ...",["Fonologi dan morfologi","Geografi","Semantik saja","Tipografi"],0,"Morfologi mengkaji struktur dan pembentukan kata; fonologi bunyi bahasa."],
+["Dalam karya ilmiah, daftar pustaka berfungsi untuk ...",["Memperindah halaman","Menunjukkan sumber rujukan","Menggantikan kesimpulan","Menambah jumlah bab"],1,"Daftar pustaka mencatat sumber yang digunakan."],
+["Paragraf dengan kalimat utama di akhir disebut paragraf ...",["Deduktif","Induktif","Campuran","Deskriptif"],1,"Paragraf induktif menyimpulkan gagasan di akhir."]
+]
+],
+"Bahasa Inggris": [
+[
+["The opposite of 'big' is ...",["Tall","Small","Long","Wide"],1,"Small is the opposite of big."],
+["She ... a student.",["am","are","is","be"],2,"Use 'is' with she/he/it."],
+["What is the meaning of 'book'?",["Meja","Buku","Pintu","Kursi"],1,"Book means buku."],
+["Choose the correct greeting in the morning.",["Good night","Good morning","Good evening","Good bye"],1,"Good morning is used in the morning."],
+["The plural form of 'child' is ...",["Childs","Childes","Children","Childrens"],2,"The irregular plural is children."]
+],
+[
+["I ... to school every day.",["go","goes","going","gone"],0,"With I, use the base verb in simple present."],
+["The past form of 'eat' is ...",["Eated","Ate","Eating","Eaten"],1,"Eat is an irregular verb: eat–ate–eaten."],
+["'Beautiful' is closest in meaning to ...",["Ugly","Pretty","Angry","Quiet"],1,"Beautiful means pretty or attractive."],
+["There ... two cats under the table.",["is","am","are","be"],2,"Use are for plural subjects."],
+["Which sentence is a request?",["I am tired.","Please open the window.","It is Monday.","She likes music."],1,"Please open the window is a polite request."]
+],
+[
+["Choose the correct sentence.",["He don't like tea.","He doesn't like tea.","He not likes tea.","He doesn't likes tea."],1,"Doesn't is followed by the base verb."],
+["We have lived here ... 2020.",["for","since","during","from"],1,"Since is used with a starting point in time."],
+["What is the main idea of a paragraph?",["A minor detail","The central point","A difficult word","The final punctuation"],1,"The main idea is the central point."],
+["'Although it was late, they continued studying.' The word although shows ...",["Addition","Contrast","Cause","Time"],1,"Although introduces a contrast."],
+["The comparative form of 'good' is ...",["Gooder","More good","Better","Best"],2,"Good–better–best."]
+],
+[
+["If I ... more time, I would learn another language.",["have","had","will have","has"],1,"Second conditional uses if + past simple."],
+["The passive form of 'They built the bridge' is ...",["The bridge built them.","The bridge was built by them.","The bridge is building.","They were built by the bridge."],1,"Past simple passive: was/were + past participle."],
+["Choose the correct reported speech: He said, 'I am busy.'",["He said he is busy.","He said he was busy.","He says I was busy.","He said I am busy yesterday."],1,"Present shifts to past in standard reported speech."],
+["A text that explains how or why something happens is commonly ...",["Narrative","Explanation","Invitation","Announcement"],1,"An explanation text explains processes or phenomena."],
+["'Despite the rain, the event continued.' Despite can be replaced by ...",["Because of","In spite of","Therefore","Unless"],1,"Despite and in spite of have similar meanings."]
+],
+[
+["Had I known about the meeting, I ... earlier.",["will come","would come","would have come","came"],2,"Third conditional: would have + past participle."],
+["The phrase 'a blessing in disguise' means ...",["A hidden problem","Something good that seemed bad at first","A clear warning","A lucky person"],1,"It describes an apparent problem that turns out beneficial."],
+["Which sentence uses a defining relative clause?",["My brother, who lives in Bali, is a chef.","The book that you lent me is fascinating.","Jakarta, which is crowded, is the capital.","My car, which is old, still works."],1,"The clause identifies which book is meant."],
+["The author's tone is best described as ...",["The writer's attitude toward the subject","The number of paragraphs","The story's setting","The text's font"],0,"Tone reflects the writer's attitude."],
+["Choose the most appropriate formal closing for an email.",["See ya!","Cheers, mate!","Yours sincerely,","Later!"],2,"Yours sincerely is a formal email closing."]
+]
+],
+"IPA": [
+[
+["Planet tempat manusia tinggal adalah ...",["Mars","Venus","Bumi","Jupiter"],2,"Bumi adalah planet tempat kehidupan manusia."],
+["Organ utama untuk memompa darah adalah ...",["Paru-paru","Jantung","Ginjal","Hati"],1,"Jantung memompa darah ke seluruh tubuh."],
+["Satuan SI untuk panjang adalah ...",["Kilogram","Sekon","Meter","Ampere"],2,"Meter adalah satuan dasar panjang SI."],
+["Tumbuhan membuat makanan melalui proses ...",["Respirasi","Fotosintesis","Fermentasi","Evaporasi"],1,"Fotosintesis menggunakan cahaya untuk menghasilkan makanan."],
+["Wujud benda dengan bentuk dan volume tetap adalah ...",["Gas","Cair","Padat","Plasma"],2,"Benda padat memiliki bentuk dan volume tetap."]
+],
+[
+["Alat untuk mengukur suhu adalah ...",["Barometer","Termometer","Amperemeter","Higrometer"],1,"Termometer mengukur suhu."],
+["Partikel terkecil penyusun unsur yang masih memiliki sifat unsur adalah ...",["Molekul","Atom","Sel","Jaringan"],1,"Atom merupakan unit dasar unsur kimia."],
+["Gas yang dibutuhkan manusia untuk respirasi adalah ...",["Nitrogen","Oksigen","Karbon dioksida","Helium"],1,"Oksigen digunakan dalam respirasi sel."],
+["Perubahan wujud dari cair menjadi gas disebut ...",["Membeku","Mengembun","Menguap","Menyublim"],2,"Penguapan adalah perubahan cair ke gas."],
+["Gaya yang menarik benda ke pusat Bumi disebut ...",["Gesek","Magnet","Gravitasi","Pegas"],2,"Gravitasi menarik benda bermassa."]
+],
+[
+["Jika jarak 100 m ditempuh dalam 20 s, kelajuan rata-ratanya ...",["2 m/s","4 m/s","5 m/s","10 m/s"],2,"Kelajuan = jarak/waktu = 100/20 = 5 m/s."],
+["Simbol kimia natrium adalah ...",["N","Na","Ne","Ni"],1,"Natrium memiliki simbol Na."],
+["Organel sel yang menghasilkan sebagian besar ATP adalah ...",["Ribosom","Mitokondria","Vakuola","Lisosom"],1,"Mitokondria merupakan tempat utama respirasi aerob."],
+["Larutan dengan pH kurang dari 7 bersifat ...",["Asam","Basa","Netral","Garam murni"],0,"pH di bawah 7 menunjukkan sifat asam."],
+["Energi kinetik dimiliki benda karena ...",["Ketinggiannya","Geraknya","Suhunya saja","Warna"],1,"Energi kinetik adalah energi akibat gerak."]
+],
+[
+["Sebuah benda bermassa 2 kg mengalami percepatan 3 m/s². Gayanya ...",["2 N","3 N","5 N","6 N"],3,"F = m × a = 2 × 3 = 6 N."],
+["Ikatan yang terjadi karena pemakaian pasangan elektron bersama adalah ...",["Ion","Kovalen","Logam","Hidrogen"],1,"Ikatan kovalen terbentuk melalui pemakaian bersama elektron."],
+["Dalam rantai makanan, organisme yang membuat makanan sendiri disebut ...",["Konsumen","Produsen","Dekomposer","Predator"],1,"Produsen umumnya tumbuhan atau organisme autotrof."],
+["Hukum kekekalan massa menyatakan bahwa dalam reaksi tertutup ...",["Massa produk selalu lebih besar","Massa total tetap","Massa selalu hilang","Volume selalu tetap"],1,"Massa total sebelum dan sesudah reaksi sama."],
+["Pembuluh darah yang membawa darah keluar dari jantung adalah ...",["Vena","Arteri","Kapiler","Limfa"],1,"Arteri membawa darah menjauhi jantung."]
+],
+[
+["Gelombang memiliki frekuensi 5 Hz dan panjang gelombang 2 m. Cepat rambatnya ...",["2,5 m/s","5 m/s","7 m/s","10 m/s"],3,"v = f × λ = 5 × 2 = 10 m/s."],
+["Jika konsentrasi ion H⁺ meningkat, pH larutan akan ...",["Meningkat","Menurun","Tetap selalu 7","Menjadi tak terhingga"],1,"pH berbanding terbalik dengan konsentrasi H⁺."],
+["Persilangan Aa × Aa menghasilkan peluang genotipe aa sebesar ...",["0%","25%","50%","75%"],1,"Rasio genotipe 1 AA : 2 Aa : 1 aa."],
+["Proses perpindahan panas tanpa perpindahan zat perantara disebut ...",["Konduksi","Konveksi","Radiasi","Evaporasi"],2,"Radiasi dapat merambat tanpa medium."],
+["Keanekaragaman hayati tingkat gen ditunjukkan oleh ...",["Kucing dan harimau","Varietas mangga yang berbeda","Hutan dan laut","Jamur dan bakteri"],1,"Varietas dalam satu spesies menunjukkan variasi genetik."]
+]
+],
+"Informatika": [
+[
+["Kepanjangan CPU adalah ...",["Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Power Unit"],0,"CPU adalah Central Processing Unit."],
+["Perangkat untuk memasukkan teks ke komputer adalah ...",["Monitor","Keyboard","Speaker","Proyektor"],1,"Keyboard merupakan perangkat input."],
+["Bilangan biner hanya menggunakan angka ...",["0 dan 1","1 dan 2","0 sampai 9","A dan B"],0,"Sistem biner menggunakan dua digit: 0 dan 1."],
+["Aplikasi untuk menjelajahi halaman web disebut ...",["Browser","Compiler","Calculator","File manager"],0,"Browser digunakan untuk mengakses web."],
+["Contoh kata sandi yang lebih kuat adalah ...",["12345678","password","R4in!Biru_27","namasaya"],2,"Kombinasi karakter yang panjang dan unik lebih kuat."]
+],
+[
+["Bilangan biner 101 dalam desimal adalah ...",["3","4","5","6"],2,"101₂ = 4 + 1 = 5."],
+["Perangkat yang menghubungkan beberapa jaringan berbeda disebut ...",["Router","Mouse","Printer","Scanner"],0,"Router meneruskan paket antarjaringan."],
+["Ekstensi umum file dokumen Microsoft Word adalah ...",[".mp3",".docx",".png",".exe"],1,"Dokumen Word modern umumnya menggunakan .docx."],
+["Dalam flowchart, simbol belah ketupat menunjukkan ...",["Proses","Mulai/selesai","Keputusan","Input/output"],2,"Belah ketupat digunakan untuk percabangan/keputusan."],
+["Tindakan mengirim email palsu untuk mencuri data disebut ...",["Rendering","Phishing","Formatting","Debugging"],1,"Phishing adalah upaya penipuan untuk memperoleh informasi sensitif."]
+],
+[
+["Hasil dari 1110₂ ke desimal adalah ...",["10","12","14","16"],2,"8 + 4 + 2 = 14."],
+["Urutan instruksi logis untuk menyelesaikan masalah disebut ...",["Algoritma","Jaringan","Database","Antarmuka"],0,"Algoritma adalah langkah-langkah terstruktur."],
+["Dalam pemrograman, perulangan digunakan untuk ...",["Mengulang instruksi","Menghapus sistem operasi","Memperbesar layar","Mengganti perangkat"],0,"Loop menjalankan instruksi berulang kali."],
+["Alamat IP versi 4 memiliki panjang ...",["16 bit","32 bit","64 bit","128 bit"],1,"IPv4 menggunakan alamat 32 bit."],
+["Data yang disusun dalam baris dan kolom paling umum disebut ...",["Audio","Tabel","Animasi","Peta piksel"],1,"Tabel menyusun data dalam baris dan kolom."]
+],
+[
+["Jika kondisi if bernilai false dan tidak ada else, blok if akan ...",["Tetap dijalankan","Dilewati","Diulang terus","Menghentikan komputer"],1,"Blok if dijalankan hanya ketika kondisi true."],
+["Kompleksitas pencarian linear pada n data dalam kasus terburuk adalah ...",["O(1)","O(log n)","O(n)","O(n²)"],2,"Linear search dapat memeriksa hingga n elemen."],
+["Sistem bilangan heksadesimal menggunakan basis ...",["2","8","10","16"],3,"Heksadesimal memakai 16 simbol: 0–9 dan A–F."],
+["Prinsip least privilege dalam keamanan berarti ...",["Semua pengguna jadi admin","Akses diberikan secukupnya sesuai kebutuhan","Kata sandi dibagikan","Semua file dibuka publik"],1,"Pengguna hanya diberi hak minimum yang diperlukan."],
+["Struktur data yang menerapkan prinsip LIFO adalah ...",["Queue","Stack","Tree","Graph"],1,"Stack menggunakan Last In, First Out."]
+],
+[
+["Bilangan desimal 45 dalam biner adalah ...",["101101","110101","101011","111000"],0,"32 + 8 + 4 + 1 = 45."],
+["Dalam basis data relasional, primary key berfungsi untuk ...",["Mengurutkan warna","Mengidentifikasi baris secara unik","Menghapus tabel","Menyimpan gambar saja"],1,"Primary key menjadi identitas unik setiap record."],
+["Jika algoritma membagi masalah menjadi bagian lebih kecil secara berulang, pendekatan ini dikenal sebagai ...",["Brute force saja","Divide and conquer","Random guessing","Linear scan"],1,"Divide and conquer membagi, menyelesaikan, lalu menggabungkan."],
+["Serangan yang membanjiri server dengan lalu lintas agar layanan tidak tersedia disebut ...",["DDoS","Defragmentasi","Enkripsi","Backup"],0,"Distributed Denial of Service membanjiri layanan."],
+["Pada graf tak berarah dengan 6 simpul, jumlah maksimum sisi tanpa loop adalah ...",["6","12","15","30"],2,"Maksimum sisi = n(n−1)/2 = 6×5/2 = 15."]
+]
+],
+"Sejarah": [
+[
+["Proklamasi Kemerdekaan Indonesia dibacakan pada ...",["1 Juni 1945","17 Agustus 1945","10 November 1945","20 Mei 1908"],1,"Proklamasi dibacakan pada 17 Agustus 1945."],
+["Siapa yang membacakan teks Proklamasi?",["Mohammad Hatta","Soekarno","Sutan Sjahrir","Ki Hajar Dewantara"],1,"Soekarno membacakan teks Proklamasi didampingi Mohammad Hatta."],
+["Organisasi Budi Utomo berdiri pada tahun ...",["1908","1928","1945","1949"],0,"Budi Utomo berdiri pada 20 Mei 1908."],
+["Sumpah Pemuda diikrarkan pada ...",["1908","1926","1928","1945"],2,"Kongres Pemuda II berlangsung pada 28 Oktober 1928."],
+["Candi Borobudur merupakan peninggalan bercorak ...",["Hindu","Buddha","Islam","Kristen"],1,"Borobudur merupakan candi Buddha."]
+],
+[
+["VOC didirikan oleh Belanda pada tahun ...",["1498","1602","1755","1808"],1,"VOC didirikan pada 1602."],
+["Tokoh yang dikenal sebagai Bapak Pendidikan Nasional adalah ...",["Soedirman","Ki Hajar Dewantara","Mohammad Yamin","Douwes Dekker"],1,"Ki Hajar Dewantara berperan besar dalam pendidikan nasional."],
+["Kerajaan maritim besar di Sumatra yang bercorak Buddha adalah ...",["Majapahit","Sriwijaya","Mataram Kuno","Singasari"],1,"Sriwijaya berkembang sebagai kerajaan maritim dan pusat Buddha."],
+["Perang Diponegoro berlangsung pada tahun ...",["1825–1830","1908–1912","1945–1949","1755–1760"],0,"Perang Diponegoro berlangsung 1825–1830."],
+["Bangsa Eropa yang pertama kali tiba di Malaka pada 1511 adalah ...",["Inggris","Portugis","Belanda","Prancis"],1,"Portugis merebut Malaka pada 1511."]
+],
+[
+["Peristiwa Rengasdengklok terjadi menjelang ...",["Sumpah Pemuda","Proklamasi Kemerdekaan","Konferensi Asia Afrika","Pemilu pertama"],1,"Golongan muda mendesak proklamasi segera dilakukan."],
+["Konferensi Asia Afrika diselenggarakan di Bandung pada tahun ...",["1945","1949","1955","1965"],2,"KAA berlangsung pada 18–24 April 1955."],
+["Kerajaan Majapahit mencapai puncak kejayaan pada masa ...",["Hayam Wuruk","Ken Arok","Purnawarman","Balaputradewa"],0,"Hayam Wuruk memerintah bersama mahapatih Gajah Mada."],
+["Tujuan utama tanam paksa pada masa kolonial Belanda adalah ...",["Meningkatkan pendidikan rakyat","Mengisi kas Belanda","Membangun industri lokal","Membentuk parlemen"],1,"Cultuurstelsel bertujuan meningkatkan pemasukan pemerintah kolonial."],
+["Naskah yang menjadi dasar pengakuan kedaulatan Indonesia oleh Belanda pada 1949 adalah hasil ...",["Perjanjian Linggarjati","Konferensi Meja Bundar","Perjanjian Renville","Perjanjian Roem-Royen"],1,"KMB menghasilkan kesepakatan penyerahan kedaulatan."]
+],
+[
+["Politik Etis Belanda mencakup tiga program, yaitu ...",["Edukasi, irigasi, emigrasi","Pajak, perang, dagang","Industri, militer, monopoli","Transmigrasi, koperasi, pemilu"],0,"Tiga program dikenal sebagai edukasi, irigasi, dan emigrasi."],
+["Organisasi pergerakan nasional yang didirikan oleh Soekarno pada 1927 adalah ...",["Indische Partij","PNI","Sarekat Islam","Budi Utomo"],1,"Partai Nasional Indonesia didirikan pada 1927."],
+["Revolusi Industri pertama kali berkembang di ...",["Inggris","Jepang","Rusia","Mesir"],0,"Revolusi Industri bermula di Inggris pada abad ke-18."],
+["Peristiwa yang menandai berakhirnya Perang Dunia II di Asia adalah ...",["Jatuhnya Konstantinopel","Penyerahan Jepang pada 1945","Revolusi Prancis","Perang Diponegoro"],1,"Jepang menyerah pada Sekutu pada Agustus 1945."],
+["Tujuan utama gerakan nonblok adalah ...",["Membentuk blok militer baru","Tidak memihak blok kekuatan besar","Menguasai perdagangan dunia","Mendirikan koloni"],1,"Gerakan Non-Blok menjaga sikap independen dari blok Barat dan Timur."]
+],
+[
+["Historiografi yang ditulis dari sudut pandang bangsa Indonesia dan menonjolkan pengalaman bangsa sendiri disebut ...",["Historiografi kolonial","Historiografi tradisional","Historiografi nasional","Historiografi istana"],2,"Historiografi nasional berpusat pada pengalaman dan perspektif bangsa Indonesia."],
+["Salah satu dampak penting Sumpah Pemuda bagi pergerakan nasional adalah ...",["Menghapus seluruh organisasi","Memperkuat identitas dan persatuan kebangsaan","Mengakhiri penjajahan saat itu juga","Membentuk pemerintahan federal"],1,"Sumpah Pemuda memperkuat kesadaran sebagai satu bangsa."],
+["Perang Dingin terutama merupakan persaingan antara ...",["Inggris dan Prancis","Amerika Serikat dan Uni Soviet","Jepang dan Tiongkok","India dan Pakistan"],1,"Dua kekuatan utama Perang Dingin adalah AS dan Uni Soviet."],
+["Dalam penelitian sejarah, kritik eksternal sumber bertujuan menilai ...",["Keaslian fisik dan asal sumber","Gaya bahasa penulis saja","Dampak ekonomi peristiwa","Pendapat pembaca"],0,"Kritik eksternal memeriksa autentisitas sumber."],
+["Dekrit Presiden 5 Juli 1959 antara lain menetapkan kembali berlakunya ...",["Konstitusi RIS","UUD 1945","UUDS 1950","Piagam Jakarta sebagai konstitusi"],1,"Dekrit 5 Juli 1959 menetapkan kembali UUD 1945."]
+]
+]
+};
+
+const SUBJECTS = [
+ {name:"Matematika",icon:"📐",desc:"Numerasi, aljabar, statistika"},
+ {name:"Bahasa Indonesia",icon:"📖",desc:"Bahasa, teks, dan literasi"},
+ {name:"Bahasa Inggris",icon:"🌎",desc:"Vocabulary, grammar, reading"},
+ {name:"IPA",icon:"🧪",desc:"Fisika, kimia, biologi"},
+ {name:"Informatika",icon:"💻",desc:"Logika, algoritma, teknologi"},
+ {name:"Sejarah",icon:"🏛️",desc:"Indonesia dan sejarah dunia"}
+];
+const LEVELS=["Easy","Easy+","Medium","Hard","Expert"];
+let subject="",level=0,players=[],scores=[0,0],questions=[],qIndex=0,answers=[null,null],timeLeft=20,timer=null,board={},matchHistory=[],lastMatch=null,musicOn=false,audioCtx=null,musicTimer=null,stepIndex=0;
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");if(id==="leaderboard")renderBoard();window.scrollTo({top:0,behavior:"smooth"});}
+function toast(msg){let t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200);}
+function init(){document.getElementById("subjectGrid").innerHTML=SUBJECTS.map(s=>`<button class="tile" onclick="chooseSubject('${s.name}')"><div class="emoji">${s.icon}</div><strong>${s.name}</strong><small>${s.desc}</small></button>`).join("");}
+function chooseSubject(s){subject=s;document.getElementById("levelTitle").textContent="Pilih level · "+s;document.getElementById("levelGrid").innerHTML=LEVELS.map((l,i)=>`<button class="level" onclick="chooseLevel(${i})"><b>${i+1}</b><strong>${l}</strong><br><span>${["Dasar","Pemahaman","Penerapan","Analisis","Expert"][i]}</span></button>`).join("");go("levels");}
+function chooseLevel(l){level=l;document.getElementById("matchInfo").textContent=subject+" · Level "+(level+1)+" "+LEVELS[level]+" · 5 soal acak";go("players");}
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function startMatch(){players=[document.getElementById("p1name").value.trim()||"Player 1",document.getElementById("p2name").value.trim()||"Player 2"];scores=[0,0];qIndex=0;answers=[null,null];questions=shuffle(BANK[subject][level]).slice(0,5);if(questions.length<5){toast("Bank soal belum cukup untuk level ini.");return;}document.getElementById("gameCategory").textContent=subject.toUpperCase()+" · LEVEL "+(level+1);document.getElementById("gameP1").textContent=players[0];document.getElementById("gameP2").textContent=players[1];updateScores();go("game");playSfx("start");loadQuestion();}
+function loadQuestion(){clearInterval(timer);answers=[null,null];let q=questions[qIndex];document.getElementById("questionCount").textContent=`SOAL ${qIndex+1} DARI ${questions.length}`;document.getElementById("progressBar").style.width=(qIndex/questions.length*100)+"%";document.getElementById("qmeta").textContent=["QUICK THINKING","BRAIN POWER","THINK FAST","CHALLENGE TIME","FINAL STRETCH"][qIndex]||"BRAIN BATTLE";document.getElementById("questionText").textContent=q[0];document.getElementById("feedback1").textContent="Pilih jawabanmu!";document.getElementById("feedback2").textContent="Pilih jawabanmu!";for(let p=0;p<2;p++){let box=document.getElementById("answers"+(p+1));box.innerHTML=q[1].map((a,i)=>`<button class="answer" id="a${p}_${i}" onclick="pickAnswer(${p},${i})"><b>${String.fromCharCode(65+i)}.</b> ${a}</button>`).join("");}timeLeft=20;document.getElementById("timer").textContent=timeLeft;timer=setInterval(()=>{timeLeft--;document.getElementById("timer").textContent=timeLeft;if(timeLeft<=5&&timeLeft>0)playSfx("tick");if(timeLeft<=0){clearInterval(timer);resolveQuestion(true);}},1000);}
+function pickAnswer(p,i){if(answers[p]!==null)return;answers[p]=i;document.querySelectorAll(`#answers${p+1} .answer`).forEach(b=>b.disabled=true);let chosen=document.getElementById(`a${p}_${i}`);chosen.classList.add("chosen");document.getElementById("feedback"+(p+1)).textContent="Jawaban terkunci ✓";playSfx("tap");if(answers.every(a=>a!==null)){clearInterval(timer);setTimeout(()=>resolveQuestion(false),450);}}
+function resolveQuestion(timeout){let q=questions[qIndex],correct=q[2],anyCorrect=false;for(let p=0;p<2;p++){let fb=document.getElementById("feedback"+(p+1));let chosen=answers[p];document.querySelectorAll(`#answers${p+1} .answer`).forEach((b,i)=>{b.disabled=true;if(i===correct)b.classList.add("correct");if(i===chosen&&chosen!==correct)b.classList.add("wrong");});if(chosen===correct){scores[p]+=100;anyCorrect=true;fb.textContent="BENAR! +100 poin · "+q[3];}else if(chosen===null){fb.textContent="Waktu habis! · "+q[3];}else{fb.textContent="Belum tepat · "+q[3];}}updateScores();if(anyCorrect)playSfx("correct");else playSfx("wrong");document.getElementById("progressBar").style.width=((qIndex+1)/questions.length*100)+"%";setTimeout(()=>{qIndex++;if(qIndex<questions.length)loadQuestion();else finishMatch();},timeout?1700:2100);}
+function updateScores(){document.getElementById("score1").textContent=scores[0];document.getElementById("score2").textContent=scores[1];}
+function finishMatch(){clearInterval(timer);let winner=scores[0]===scores[1]?"Seri":scores[0]>scores[1]?players[0]:players[1];lastMatch={subject,level,players:[...players],scores:[...scores],winner};matchHistory.push(lastMatch);players.forEach((name,i)=>{let key=name.trim().toLowerCase();if(!board[key])board[key]={name,points:0,wins:0,played:0};board[key].points+=scores[i];board[key].played++;if(scores[i]>scores[1-i])board[key].wins++;});document.getElementById("winnerIcon").textContent=winner==="Seri"?"🤝":"🏆";document.getElementById("winnerText").textContent=winner==="Seri"?"PERTANDINGAN SERI!":winner+" MENANG!";document.getElementById("resultSub").textContent=subject+" · Level "+(level+1)+" "+LEVELS[level];document.getElementById("resName1").textContent=players[0];document.getElementById("resName2").textContent=players[1];document.getElementById("resScore1").textContent=scores[0];document.getElementById("resScore2").textContent=scores[1];document.getElementById("resultDetail").textContent="Pertandingan selesai! Skor sudah ditambahkan ke Class Leaderboard.";playSfx("win");go("result");}
+function rematch(){if(!lastMatch)return;subject=lastMatch.subject;level=lastMatch.level;document.getElementById("p1name").value=lastMatch.players[0];document.getElementById("p2name").value=lastMatch.players[1];startMatch();}
+function newMatch(){document.getElementById("p1name").value="Player 1";document.getElementById("p2name").value="Player 2";go("subjects");}
+function showLeaderboard(){go("leaderboard");}
+function renderBoard(){let rows=Object.values(board).sort((a,b)=>b.points-a.points||b.wins-a.wins);let el=document.getElementById("leaderTable");if(!rows.length){el.innerHTML='<div class="empty">Belum ada pertandingan. Ayo mulai battle pertama! ⚡</div>';return;}el.innerHTML=`<table><thead><tr><th>Rank</th><th>Nama pemain</th><th>Total poin</th><th>Menang</th><th>Main</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="rank">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</td><td><b>${escapeHTML(r.name)}</b></td><td>${r.points}</td><td>${r.wins}</td><td>${r.played}</td></tr>`).join("")}</tbody></table>`;}
+function escapeHTML(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function resetBoard(){if(confirm("Yakin ingin menghapus seluruh klasemen sesi ini?")){board={};matchHistory=[];renderBoard();toast("Klasemen berhasil direset.");}}
+function confirmExit(){document.getElementById("modal").classList.add("show");}
+function closeModal(){document.getElementById("modal").classList.remove("show");}
+function exitGame(){clearInterval(timer);closeModal();go("home");}
+function ensureAudio(){if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)();}if(audioCtx.state==="suspended")audioCtx.resume();}
+function tone(freq,duration,type="sine",volume=.045,when=0){if(!audioCtx)return;let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,audioCtx.currentTime+when);g.gain.setValueAtTime(.0001,audioCtx.currentTime+when);g.gain.exponentialRampToValueAtTime(volume,audioCtx.currentTime+when+.02);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+when+duration);o.connect(g);g.connect(audioCtx.destination);o.start(audioCtx.currentTime+when);o.stop(audioCtx.currentTime+when+duration+.03);}
+function playSfx(kind){try{ensureAudio();if(kind==="tap")tone(520,.09,"triangle",.025);if(kind==="tick")tone(760,.06,"square",.012);if(kind==="start"){tone(440,.13,"triangle",.04);tone(660,.16,"triangle",.04,.13);tone(880,.22,"triangle",.04,.28);}if(kind==="correct"){tone(660,.12,"sine",.04);tone(880,.2,"sine",.04,.12);}if(kind==="wrong"){tone(180,.2,"sawtooth",.025);}if(kind==="win"){[523,659,784,1046].forEach((f,i)=>tone(f,.28,"triangle",.045,i*.13));}}catch(e){}}
+const melody=[523,659,784,659,587,698,880,698,523,659,784,988,880,784,659,587];
+function musicLoop(){if(!musicOn)return;try{ensureAudio();let base=audioCtx.currentTime;for(let i=0;i<melody.length;i++){let t=i*.22;let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type="triangle";o.frequency.value=melody[(i+stepIndex)%melody.length];g.gain.setValueAtTime(.0001,base+t);g.gain.exponentialRampToValueAtTime(.045,base+t+.025);g.gain.exponentialRampToValueAtTime(.0001,base+t+.19);o.connect(g);g.connect(audioCtx.destination);o.start(base+t);o.stop(base+t+.2);}stepIndex=(stepIndex+4)%melody.length;}catch(e){}musicTimer=setTimeout(musicLoop,melody.length*220);}
+async function toggleMusic(){musicOn=!musicOn;let b=document.getElementById("musicBtn");b.textContent=musicOn?"♫ Musik: ON":"♫ Musik: OFF";b.classList.toggle("active",musicOn);if(musicOn){try{ensureAudio();await audioCtx.resume();playSfx("start");musicLoop();}catch(e){musicOn=false;b.textContent="♫ Musik: OFF";b.classList.remove("active");toast("Audio tidak dapat diaktifkan. Coba buka file langsung di Chrome.");}}else{clearTimeout(musicTimer);}}
+init();
+</script>
+</body>
+</html>
