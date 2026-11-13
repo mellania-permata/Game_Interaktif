@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🪢 Tarik Tambang Koding — Kuis Pemrograman Dasar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@400;500;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#22304a; --paper:#fffdf4;
+  --red:#ff5a45; --red-d:#c93a26; --red-bg:#ffe3de;
+  --blue:#2f8fe0; --blue-d:#1a6bb5; --blue-bg:#dcf0ff;
+  --gold:#ffc93f; --gold-d:#e2a41f;
+  --green:#3bb35c; --step:26px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Rubik',system-ui,sans-serif; color:var(--ink);
+  background:
+    repeating-linear-gradient(135deg,transparent 0 26px,rgba(34,48,74,.035) 26px 28px),
+    linear-gradient(#a9d9f5,#e6f4fd 60%,#e9f6e2);
+  min-height:100vh; overflow-x:hidden;
+}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:3px dashed var(--ink);outline-offset:2px}
+
+/* ============ HUD ============ */
+#hud{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:var(--ink); color:#fff; padding:10px 18px; border-bottom:4px solid #101a2c;
+}
+#hud .brand{font-family:'Bungee';font-size:17px;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+#hud .brand small{font-family:'Rubik';font-weight:500;font-size:11px;opacity:.75;letter-spacing:0}
+.hud-center{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
+.round-pill{
+  font-family:'Bungee';font-size:13px;background:var(--gold);color:var(--ink);
+  border:3px solid #0e1626;border-radius:999px;padding:5px 14px;box-shadow:3px 3px 0 rgba(0,0,0,.35);
+}
+.dots{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700}
+.dots .d{width:14px;height:14px;border-radius:50%;border:2px solid;background:transparent;transition:.25s}
+.dots.L .d{border-color:var(--red)} .dots.R .d{border-color:var(--blue)}
+.dots .d.ok{background:var(--green);border-color:var(--green);transform:scale(1.25)}
+.dots .d.no{background:#d8443c;border-color:#d8443c}
+.dots .d.no::after{content:"✕";font-size:8px;color:#fff;display:block;line-height:11px;text-align:center}
+.dots .d.ok::after{content:"✓";font-size:9px;color:#fff;display:block;line-height:11px;text-align:center}
+.hud-btns{display:flex;gap:8px}
+.icon-btn{
+  width:38px;height:38px;border-radius:10px;border:3px solid #0e1626;background:#fffdf4;
+  font-size:16px;box-shadow:3px 3px 0 rgba(0,0,0,.35);transition:.15s;
+}
+.icon-btn:hover{transform:translateY(-2px)}
+.icon-btn:active{transform:translateY(2px);box-shadow:none}
+
+/* ============ LAYOUT ============ */
+main{max-width:1060px;margin:22px auto 40px;padding:0 16px;display:grid;gap:20px}
+
+/* ============ ARENA ============ */
+#arena{
+  position:relative;height:clamp(330px,44vw,430px);overflow:hidden;
+  border:4px solid var(--ink);border-radius:22px;
+  box-shadow:12px 14px 0 rgba(34,48,74,.18);
+  background:linear-gradient(#7ec4ef 0%,#b6e2fb 55%,#dff2fd 72%);
+}
+.sun{position:absolute;top:22px;right:52px;width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(#fff3b0,var(--gold));box-shadow:0 0 34px rgba(255,201,63,.8)}
+.sun::after{content:"";position:absolute;inset:-22px;border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,201,63,.55) 0 9deg,transparent 9deg 22deg);
+  animation:spin 26s linear infinite;-webkit-mask:radial-gradient(circle,transparent 52%,#000 53%);
+  mask:radial-gradient(circle,transparent 52%,#000 53%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cloud{position:absolute;height:26px;width:90px;background:#fff;border-radius:99px;opacity:.95;animation:drift linear infinite}
+.cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud::before{width:38px;height:38px;top:-18px;left:14px}
+.cloud::after{width:28px;height:28px;top:-12px;left:48px}
+.c1{top:44px;animation-duration:52s;animation-delay:-10s}
+.c2{top:96px;transform:scale(.7);animation-duration:70s;animation-delay:-40s}
+.c3{top:24px;transform:scale(1.2);animation-duration:88s;animation-delay:-60s}
+@keyframes drift{from{left:-160px}to{left:110%}}
+.hill{position:absolute;bottom:88px;border-radius:50% 50% 0 0;background:#a7d69a}
+.h1{left:-8%;width:55%;height:110px}
+.h2{right:-10%;width:60%;height:140px;background:#96cc85}
+.ground{position:absolute;bottom:0;left:0;right:0;height:104px;
+  background:repeating-linear-gradient(90deg,#5cb64d 0 52px,#52a945 52px 104px);
+  border-top:5px solid #3f8a37}
+
+/* bendera segitiga */
+#bunting{position:absolute;top:6px;left:-2%;right:-2%;display:flex;justify-content:space-between;z-index:5;animation:sway 4s ease-in-out infinite alternate;transform-origin:top}
+#bunting::before{content:"";position:absolute;top:-4px;left:0;right:0;height:3px;background:#5a4632;border-radius:3px}
+#bunting span{width:26px;height:32px;clip-path:polygon(0 0,100% 0,50% 100%);box-shadow:0 2px 0 rgba(0,0,0,.1)}
+@keyframes sway{from{transform:rotate(.6deg)}to{transform:rotate(-.6deg)}}
+
+/* garis lapangan */
+.line{position:absolute;bottom:14px;width:5px;height:78px;border-radius:3px;z-index:2}
+.line.center{left:50%;background:repeating-linear-gradient(#ffdf7e 0 9px,transparent 9px 18px);opacity:.9}
+.line.win{background:repeating-linear-gradient(#fff 0 10px,transparent 10px 20px)}
+.line.win.l{left:calc(50% - var(--winX,130px))}
+.line.win.r{left:calc(50% + var(--winX,130px))}
+.line .tag{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);white-space:nowrap;
+  font-family:'Bungee';font-size:9px;background:var(--paper);border:2px solid var(--ink);
+  border-radius:99px;padding:2px 7px}
+.pole{position:absolute;left:50%;bottom:88px;width:7px;height:118px;background:linear-gradient(90deg,#8a5a2b,#6d451e);border-radius:4px;transform:translateX(-50%);z-index:1}
+.pole::after{content:"";position:absolute;top:4px;left:7px;width:44px;height:28px;background:var(--gold);
+  clip-path:polygon(0 0,100% 0,78% 50%,100% 100%,0 100%);animation:flap 1.1s ease-in-out infinite alternate;transform-origin:left}
+@keyframes flap{from{transform:skewY(3deg)}to{transform:skewY(-4deg)}}
+#vsBadge{position:absolute;left:50%;top:34%;transform:translateX(-50%);z-index:6;
+  width:52px;height:52px;border-radius:50%;background:var(--gold);border:3px solid var(--ink);
+  display:grid;place-items:center;font-family:'Bungee';font-size:16px;box-shadow:4px 4px 0 rgba(0,0,0,.2);
+  animation:wobble 2.6s ease-in-out infinite}
+@keyframes wobble{0%,100%{transform:translateX(-50%) rotate(-6deg)}50%{transform:translateX(-50%) rotate(6deg)}}
+
+/* banner giliran melayang */
+#turnBanner{position:absolute;top:70px;left:50%;transform:translateX(-50%);z-index:7;
+  font-family:'Bungee';font-size:clamp(15px,2.6vw,22px);padding:8px 22px;border:3px solid var(--ink);
+  border-radius:14px;background:var(--paper);box-shadow:5px 5px 0 rgba(34,48,74,.25);
+  opacity:0;pointer-events:none;transition:.3s;white-space:nowrap}
+#turnBanner.show{opacity:1;animation:bannerPop .45s cubic-bezier(.2,1.6,.4,1)}
+#turnBanner.L{background:var(--red);color:#fff;border-color:#7c1d10}
+#turnBanner.R{background:var(--blue);color:#fff;border-color:#0e3f6b}
+#turnBanner.G{background:var(--gold)}
+@keyframes bannerPop{from{transform:translateX(-50%) scale(.4) rotate(-8deg)}to{transform:translateX(-50%) scale(1)}}
+
+/* ============ GRUP TARIK (tali + pemain) ============ */
+#tug{position:absolute;bottom:56px;left:0;right:0;display:flex;justify-content:center;align-items:flex-end;
+  z-index:4;transition:transform .85s cubic-bezier(.25,1.1,.35,1.05)}
+.team{position:relative;width:170px;display:flex;flex-direction:column;align-items:center}
+.crowd{font-size:19px;letter-spacing:-4px;margin-bottom:2px}
+.crowd span{display:inline-block;animation:cheerIdle 1.6s ease-in-out infinite}
+.crowd span:nth-child(2){animation-delay:.3s}.crowd span:nth-child(3){animation-delay:.6s}.crowd span:nth-child(4){animation-delay:.9s}
+@keyframes cheerIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.team.cheer .crowd span{animation:cheerBig .45s ease-in-out 3}
+@keyframes cheerBig{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(12deg)}}
+.pullers{display:flex}
+.p{font-size:46px;line-height:1;display:inline-block;transform-origin:50% 92%;
+  filter:drop-shadow(3px 3px 0 rgba(0,0,0,.18));animation:pullL 1.1s ease-in-out infinite}
+.p:nth-child(2){animation-delay:.18s}.p:nth-child(3){animation-delay:.36s}
+.team.right .pullers{transform:scaleX(-1)}
+@keyframes pullL{0%,100%{transform:rotate(-13deg)}50%{transform:rotate(-19deg)}}
+/* hentakan saat jawab */
+#arena.burst-l .team.left .p{animation:lungeL .55s ease}
+#arena.burst-r .team.right .p{animation:lungeR .55s ease}
+@keyframes lungeL{30%{transform:rotate(-32deg) translateX(-16px)}100%{transform:rotate(-13deg)}}
+@keyframes lungeR{30%{transform:rotate(32deg) translateX(16px)}100%{transform:rotate(13deg)}}
+#arena.burst-l .team.left .crowd span,#arena.burst-r .team.right .crowd span{animation:cheerBig .4s 2}
+
+/* tali */
+#rope{position:relative;width:clamp(180px,26vw,280px);height:15px;align-self:center;margin-bottom:34px;
+  border-radius:9px;border:2px solid #7c5020;
+  background:repeating-linear-gradient(60deg,#dda765 0 7px,#b97e3d 7px 14px)}
+#arena.burst-l #rope,#arena.burst-r #rope{animation:ropeJerk .55s ease}
+@keyframes ropeJerk{25%{transform:scaleX(1.04)}60%{transform:scaleX(.97)}}
+.knot{position:absolute;left:50%;top:50%;width:26px;height:26px;transform:translate(-50%,-50%);
+  border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe08a,var(--gold-d));
+  border:3px solid #7a5a17;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.dust{position:absolute;bottom:0;border-radius:50%;background:rgba(150,116,74,.55);pointer-events:none;
+  animation:puff .9s ease-out forwards;z-index:3}
+@keyframes puff{to{transform:translate(var(--dx),-46px) scale(2.4);opacity:0}}
+
+/* state menang/kalah karakter */
+#arena.win .team.loser .p{animation:flop .8s forwards}
+@keyframes flop{to{transform:rotate(86deg) translateY(8px);filter:grayscale(.6)}}
+#arena.win .team.winner .p{animation:jumpWin .5s ease-in-out infinite}
+@keyframes jumpWin{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+#arena.draw .p{animation:pullL 1.1s ease-in-out infinite}
+
+/* ============ METER TALI ============ */
+#meter{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap}
+#meter .cap{font-family:'Bungee';font-size:12px;padding:4px 10px;border:3px solid var(--ink);border-radius:99px}
+#meter .cap.l{background:var(--red);color:#fff}
+#meter .cap.r{background:var(--blue);color:#fff}
+.track{position:relative;width:min(340px,60vw);height:16px;border:3px solid var(--ink);border-radius:99px;
+  background:linear-gradient(90deg,var(--red) 0%,var(--red-bg) 42%,#fffdf4 50%,var(--blue-bg) 58%,var(--blue) 100%)}
+.track .notch{position:absolute;left:50%;top:-6px;bottom:-6px;width:3px;background:var(--ink)}
+#thumb{position:absolute;top:50%;left:50%;width:22px;height:22px;transform:translate(-50%,-50%);
+  transition:left .85s cubic-bezier(.25,1.1,.35,1.05);font-size:18px;line-height:1;
+  filter:drop-shadow(2px 2px 0 rgba(0,0,0,.3))}
+#meterLabel{font-weight:700;font-size:13px;text-align:center;margin-top:4px}
+
+/* ============ PANEL SOAL ============ */
+#panel{background:var(--paper);border:4px solid var(--ink);border-radius:22px;
+  box-shadow:12px 14px 0 rgba(34,48,74,.18);padding:20px 22px 24px;position:relative}
+.panel-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.turn-badge{font-family:'Bungee';font-size:14px;color:#fff;padding:8px 16px;border-radius:12px;
+  border:3px solid var(--ink);box-shadow:4px 4px 0 rgba(34,48,74,.25)}
+.turn-badge.L{background:var(--red)} .turn-badge.R{background:var(--blue)}
+.topic-chip{font-family:'Bungee';font-size:12px;background:var(--gold);border:3px solid var(--ink);
+  border-radius:99px;padding:7px 14px;box-shadow:3px 3px 0 rgba(34,48,74,.25)}
+.qnum{margin-left:auto;font-weight:800;font-size:13px;opacity:.7}
+#qText{font-size:clamp(17px,2.4vw,21px);font-weight:700;line-height:1.45;margin-bottom:14px}
+pre.code{font-family:'JetBrains Mono',monospace;font-size:14px;background:var(--ink);color:#ffe9a8;
+  padding:14px 18px;border-radius:12px;margin:0 0 16px;border-left:6px solid var(--gold);overflow-x:auto;line-height:1.6}
+pre.code .kw{color:#8fd3ff} pre.code .str{color:#9be89b}
+#opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;font-size:16px;font-weight:600;
+  background:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 14px;
+  box-shadow:4px 4px 0 rgba(34,48,74,.22);transition:.15s}
+.opt .key{font-family:'Bungee';font-size:14px;flex:0 0 34px;height:34px;display:grid;place-items:center;
+  border-radius:9px;border:3px solid var(--ink);background:var(--gold);transition:.15s}
+.opt:hover:not(:disabled){transform:translate(-2px,-3px) rotate(-.6deg);box-shadow:7px 8px 0 rgba(34,48,74,.22)}
+.opt:hover:not(:disabled) .key{background:var(--ink);color:var(--gold)}
+.opt:active:not(:disabled){transform:translate(2px,2px);box-shadow:none}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#d9f5df;border-color:var(--green);box-shadow:4px 4px 0 rgba(59,179,92,.4);animation:pulseOk .4s}
+.opt.right .key{background:var(--green);color:#fff}
+.opt.wrong{background:#ffd7d3;border-color:#d8443c;animation:shake .4s}
+.opt.wrong .key{background:#d8443c;color:#fff}
+@keyframes pulseOk{50%{transform:scale(1.05)}}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+#feedback{min-height:52px;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;
+  font-weight:800;font-size:15px;border-radius:12px;padding:8px 14px;transition:.25s}
+#feedback.ok{background:#d9f5df;border:3px solid var(--green)}
+#feedback.no{background:#ffd7d3;border:3px solid #d8443c}
+#panel.locked{filter:saturate(.9)}
+kbd.hint{font-family:'JetBrains Mono';font-size:11px;background:#eee;border:1px solid #bbb;border-radius:4px;padding:1px 5px}
+
+/* ============ OVERLAY ============ */
+.overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:18px;
+  background:rgba(20,34,58,.55);backdrop-filter:blur(3px)}
+.overlay.hidden{display:none}
+.card{background:var(--paper);border:4px solid var(--ink);border-radius:24px;max-width:560px;width:100%;
+  padding:28px 26px;box-shadow:14px 16px 0 rgba(0,0,0,.3);text-align:center;animation:cardIn .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes cardIn{from{transform:translateY(40px) scale(.85) rotate(-2deg);opacity:0}}
+.game-title{font-family:'Bungee';font-size:clamp(26px,6vw,44px);line-height:1.05;letter-spacing:1px}
+.game-title .t-red{color:var(--red)} .game-title .t-blue{color:var(--blue)}
+.game-sub{font-weight:700;font-size:14px;opacity:.75;margin:8px 0 18px}
+.rules{list-style:none;text-align:left;margin:0 auto 20px;max-width:420px;font-size:14px;line-height:1.5}
+.rules li{padding:7px 10px;border-radius:10px;margin-bottom:6px;background:#fff;border:2px solid rgba(34,48,74,.15)}
+.rules li b{color:var(--red-d)}
+.name-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.name-box{border:3px solid var(--ink);border-radius:14px;padding:10px}
+.name-box.L{background:var(--red-bg)} .name-box.R{background:var(--blue-bg)}
+.name-box label{display:block;font-family:'Bungee';font-size:11px;margin-bottom:6px}
+.name-box.L label{color:var(--red-d)} .name-box.R label{color:var(--blue-d)}
+.name-box input{width:100%;border:2px solid var(--ink);border-radius:8px;padding:8px 10px;
+  font-family:'Rubik';font-weight:700;font-size:14px;text-align:center;background:#fff;text-transform:uppercase}
+.btn-big{font-family:'Bungee';font-size:clamp(16px,3vw,22px);color:#fff;background:var(--green);
+  border:4px solid var(--ink);border-radius:16px;padding:14px 34px;box-shadow:6px 7px 0 rgba(34,48,74,.3);transition:.15s}
+.btn-big:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:8px 11px 0 rgba(34,48,74,.3)}
+.btn-big:active{transform:translateY(3px);box-shadow:none}
+.btn-alt{font-family:'Bungee';font-size:13px;background:var(--paper);border:3px solid var(--ink);
+  border-radius:12px;padding:11px 18px;box-shadow:4px 4px 0 rgba(34,48,74,.25);margin-left:10px;transition:.15s}
+.btn-alt:hover{transform:translateY(-2px)}
+#endEmoji{font-size:64px;animation:jumpWin .8s ease-in-out infinite;display:inline-block}
+#endTitle{font-family:'Bungee';font-size:clamp(24px,5.5vw,40px);margin:6px 0 4px}
+#endSub{font-weight:600;opacity:.75;margin-bottom:18px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stat{border:3px solid var(--ink);border-radius:14px;padding:12px}
+.stat.L{background:var(--red-bg)} .stat.R{background:var(--blue-bg)}
+.stat .nm{font-family:'Bungee';font-size:12px}
+.stat .val{font-size:26px;font-weight:800}
+.confetti{position:fixed;top:-24px;z-index:60;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(680deg)}}
+
+@media (max-width:760px){
+  :root{--step:15px}
+  #opts{grid-template-columns:1fr}
+  .p{font-size:34px}
+  #rope{margin-bottom:26px}
+  #tug{bottom:48px}
+  .pole{height:90px}
+  #vsBadge{width:42px;height:42px;font-size:13px}
+  .qnum{margin-left:0;width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= HUD ================= -->
+<header id="hud">
+  <div class="brand">🪢 TARIK TAMBANG KODING <small>kuis pemrograman dasar</small></div>
+  <div class="hud-center">
+    <div class="dots L" id="dotsL"><span class="nm" id="hudNameL">MERAH</span></div>
+    <div class="round-pill" id="roundPill">RONDE 1/5</div>
+    <div class="dots R" id="dotsR"><span class="nm" id="hudNameR">BIRU</span></div>
+  </div>
+  <div class="hud-btns">
+    <button class="icon-btn" id="btnSound" title="Suara">🔊</button>
+    <button class="icon-btn" id="btnRestart" title="Ulang dari awal">↺</button>
+  </div>
+</header>
+
+<main>
+  <!-- ================= ARENA ================= -->
+  <section id="arena" aria-label="Arena tarik tambang">
+    <div class="sun"></div>
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+    <div class="hill h1"></div><div class="hill h2"></div>
+    <div id="bunting"></div>
+    <div class="ground"></div>
+    <div class="line win l"><span class="tag" id="tagL">GARIS KIRI</span></div>
+    <div class="line center"></div>
+    <div class="line win r"><span class="tag" id="tagR">GARIS KANAN</span></div>
+    <div class="pole"></div>
+    <div id="vsBadge">VS</div>
+    <div id="turnBanner">SIAP…</div>
+
+    <div id="tug">
+      <div class="team left" id="teamL">
+        <div class="crowd"><span>📣</span><span>🙌</span><span>👏</span><span>🎺</span></div>
+        <div class="pullers"><span class="p">🧒</span><span class="p">👧</span><span class="p">🧑‍🦱</span></div>
+      </div>
+      <div id="rope"><div class="knot"></div></div>
+      <div class="team right" id="teamR">
+        <div class="crowd"><span>🎺</span><span>👏</span><span>🙌</span><span>📣</span></div>
+        <div class="pullers"><span class="p">👦</span><span class="p">🧕</span><span class="p">🧑</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= METER ================= -->
+  <div>
+    <div id="meter">
+      <span class="cap l" id="capL">◀ KIRI −5</span>
+      <div class="track"><div class="notch"></div><div id="thumb">🪢</div></div>
+      <span class="cap r" id="capR">KANAN +5 ▶</span>
+    </div>
+    <div id="meterLabel">Tali masih seimbang di tengah! (0)</div>
+  </div>
+
+  <!-- ================= PANEL SOAL ================= -->
+  <section id="panel">
+    <div class="panel-head">
+      <div class="turn-badge L" id="turnBadge">GILIRAN TIM KIRI</div>
+      <div class="topic-chip" id="topicChip">📌 VARIABEL</div>
+      <div class="qnum" id="qNum">Soal 1 • pilih jawaban dengan klik atau tombol <kbd class="hint">1–4</kbd></div>
+    </div>
+    <p id="qText">Tekan mulai untuk bermain!</p>
+    <pre class="code" id="qCode" style="display:none"></pre>
+    <div id="opts"></div>
+    <div id="feedback"></div>
+  </section>
+</main>
+
+<!-- ================= OVERLAY MULAI ================= -->
+<div class="overlay" id="startOverlay">
+  <div class="card">
+    <div class="game-title">🪢 <span class="t-red">TARIK</span> TAMBANG<br><span class="t-blue">KODING</span></div>
+    <p class="game-sub">Kuis Pemrograman Dasar • 2 Tim • 5 Soal per Tim</p>
+    <ul class="rules">
+      <li>🔁 Soal muncul <b>bergantian</b>: Tim Kiri dulu, lalu Tim Kanan.</li>
+      <li>💪 Jawaban <b>BENAR</b> menarik tali ke sisi timmu.</li>
+      <li>😬 Jawaban <b>SALAH</b> membuat tali tertarik ke sisi lawan!</li>
+      <li>🏆 Geser tali <b>5 poin</b> ke sisi lawan (atau unggul saat soal habis) untuk menang.</li>
+    </ul>
+    <div class="name-row">
+      <div class="name-box L"><label>🔴 TIM KIRI</label><input id="nameL" maxlength="12" value="MERAH"></div>
+      <div class="name-box R"><label>🔵 TIM KANAN</label><input id="nameR" maxlength="12" value="BIRU"></div>
+    </div>
+    <button class="btn-big" id="btnStart">MULAI TARIK! 🪢</button>
+  </div>
+</div>
+
+<!-- ================= OVERLAY AKHIR ================= -->
+<div class="overlay hidden" id="endOverlay">
+  <div class="card">
+    <span id="endEmoji">🏆</span>
+    <div id="endTitle">TIM MERAH MENANG!</div>
+    <p id="endSub">Tali berhasil ditarik melewati garis!</p>
+    <div class="stat-grid">
+      <div class="stat L"><div class="nm" id="statNameL">MERAH</div><div class="val" id="statL">0 benar</div></div>
+      <div class="stat R"><div class="nm" id="statNameR">BIRU</div><div class="val" id="statR">0 benar</div></div>
+    </div>
+    <button class="btn-big" id="btnReplay">MAIN LAGI 🔁</button><button class="btn-alt" id="btnRename">Ganti Nama</button>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   BANK SOAL — 5 ronde utama + 2 ronde cadangan (untuk seri)
+   Setiap ronde: topik SAMA untuk tim kiri & kanan, tapi soal beda.
+================================================================ */
+const SOAL = [
+{ topic:"Variabel & Tipe Data",
+  left:{ code:'nama = <span class="str">"Budi"</span>\numur = 15',
+    q:"Perintah menyimpan data seperti di atas disebut penggunaan …",
+    opts:["variabel","fungsi","perulangan","percabangan"], a:0 },
+  right:{ q:"Manakah yang termasuk tipe data <b>bilangan bulat</b>?",
+    opts:["string","float","integer","boolean"], a:2 } },
+
+{ topic:"Operator",
+  left:{ code:'<span class="kw">cetak</span>(7 % 3)',
+    q:"Berapakah hasil dari <b>7 % 3</b> (sisa pembagian)?",
+    opts:["1","2","3","21"], a:0 },
+  right:{ code:'<span class="kw">cetak</span>(2 + 3 * 2)',
+    q:"Berapakah hasil dari <b>2 + 3 * 2</b>?",
+    opts:["10","8","12","7"], a:1 } },
+
+{ topic:"Percabangan (IF)",
+  left:{ code:'nilai = 80\n<span class="kw">jika</span> nilai >= 75:\n    <span class="kw">cetak</span>(<span class="str">"LULUS"</span>)\n<span class="kw">selain itu</span>:\n    <span class="kw">cetak</span>(<span class="str">"REMED"</span>)',
+    q:"Apa yang dicetak oleh program di atas?",
+    opts:["LULUS","REMED","LULUS dan REMED","Tidak mencetak apa-apa"], a:0 },
+  right:{ code:'x = 10\n<span class="kw">jika</span> x > 5 <span class="kw">dan</span> x < 20:\n    <span class="kw">cetak</span>(<span class="str">"AMAN"</span>)',
+    q:"Apa yang dicetak oleh program di atas?",
+    opts:["AMAN","TIDAK AMAN","ERROR","Tidak mencetak apa-apa"], a:0 } },
+
+{ topic:"Perulangan (LOOP)",
+  left:{ code:'<span class="kw">untuk</span> i dari 1 sampai 5:\n    <span class="kw">cetak</span>(<span class="str">"Halo"</span>)',
+    q:"Berapa kali teks <b>\"Halo\"</b> dicetak?",
+    opts:["3 kali","4 kali","5 kali","Tidak berhenti"], a:2 },
+  right:{ code:'i = 0\n<span class="kw">selama</span> i < 3:\n    <span class="kw">cetak</span>(i)\n    i = i + 1',
+    q:"Angka apa saja yang dicetak program?",
+    opts:["0, 1, 2","1, 2, 3","0, 1, 2, 3","3 saja"], a:0 } },
+
+{ topic:"Fungsi (FUNCTION)",
+  left:{ q:"Potongan program yang bisa dipanggil berulang untuk menjalankan tugas tertentu disebut …",
+    opts:["komentar","fungsi","variabel","operator"], a:1 },
+  right:{ code:'<span class="kw">fungsi</span> tambah(a, b):\n    <span class="kw">kembalikan</span> a + b\n\nhasil = tambah(3, 4)',
+    q:"Berapakah nilai <b>hasil</b>?",
+    opts:["3","4","7","34"], a:2 } },
+
+/* ---- cadangan ronde penentu ---- */
+{ topic:"Array / List",
+  left:{ code:'buah = [<span class="str">"apel"</span>, <span class="str">"mangga"</span>, <span class="str">"jeruk"</span>]',
+    q:"Elemen pada <b>indeks ke-1</b> adalah …",
+    opts:["apel","mangga","jeruk","Tidak ada"], a:1 },
+  right:{ q:"Untuk mengetahui banyaknya elemen pada sebuah array kita memakai …",
+    opts:["len()","nama()","besar()","jumlah_kata()"], a:0 } },
+
+{ topic:"Logika & Boolean",
+  left:{ code:'<span class="kw">cetak</span>(5 > 3)',
+    q:"Nilai dari ekspresi <b>5 > 3</b> adalah …",
+    opts:["True","False","Error","5"], a:0 },
+  right:{ q:"Operator logika yang hasilnya TRUE <b>hanya jika kedua kondisi benar</b> adalah …",
+    opts:["OR","NOT","AND","XOR"], a:2 } },
+];
+
+const MAIN_ROUNDS = 5, WIN = 5;
+const $ = id => document.getElementById(id);
+
+/* ---------------- STATE ---------------- */
+let names = { L:"MERAH", R:"BIRU" };
+let pos=0, round=0, phase="L", sudden=false, over=false, locked=true;
+let dots={L:[],R:[]}, correct={L:0,R:0};
+let step=26;
+
+/* ---------------- SUARA (WebAudio) ---------------- */
+let actx=null, muted=false;
+function tone(f,d,type="square",g=.12,delay=0,glide=null){
+  if(muted) return;
+  actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+  const t=actx.currentTime+delay, o=actx.createOscillator(), gn=actx.createGain();
+  o.type=type; o.frequency.setValueAtTime(f,t);
+  if(glide) o.frequency.exponentialRampToValueAtTime(glide,t+d);
+  gn.gain.setValueAtTime(g,t); gn.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.connect(gn).connect(actx.destination); o.start(t); o.stop(t+d+.02);
+}
+const sfx = {
+  ok(){ tone(523,.09); tone(784,.14,"square",.12,.09); },
+  no(){ tone(200,.28,"sawtooth",.14,0,120); },
+  pull(){ tone(85,.1,"triangle",.2); },
+  win(){ [523,659,784,1047].forEach((f,i)=>tone(f,.16,"square",.12,i*.13)); }
+};
+
+/* ---------------- DEKORASI ---------------- */
+(function bunting(){
+  const cols=["#ff5a45","#ffc93f","#2f8fe0","#fffdf4"];
+  let h=""; for(let i=0;i<16;i++) h+=`<span style="background:${cols[i%4]}"></span>`;
+  $("bunting").innerHTML=h;
+})();
+
+/* ---------------- UKURAN ---------------- */
+function measure(){
+  step = matchMedia("(max-width:760px)").matches ? 15 : 26;
+  $("arena").style.setProperty("--winX", (WIN*step)+"px");
+  applyPos(false);
+}
+addEventListener("resize",measure);
+
+function applyPos(animate=true){
+  $("tug").style.transition = animate ? "" : "none";
+  $("tug").style.transform = `translateX(${pos*step}px)`;
+  $("thumb").style.left = `calc(50% + ${(pos/WIN)*46}%)`;
+  const ml=$("meterLabel");
+  if(pos===0) ml.textContent="Tali masih seimbang di tengah! (0)";
+  else if(pos<0) ml.textContent=`Tali condong ke KIRI — keunggulan ${names.L} (${pos})`;
+  else ml.textContent=`Tali condong ke KANAN — keunggulan ${names.R} (+${pos})`;
+}
+
+/* ---------------- HUD ---------------- */
+function buildDots(){
+  ["L","R"].forEach(t=>{
+    const box = t==="L"?$("dotsL"):$("dotsR");
+    box.querySelectorAll(".d").forEach(e=>e.remove());
+    for(let i=0;i<MAIN_ROUNDS;i++){
+      const s=document.createElement("span"); s.className="d"; box.appendChild(s);
+    }
+    dots[t]=[...box.querySelectorAll(".d")];
+  });
+}
+function setDot(t,i,ok){ if(dots[t][i]){ dots[t][i].classList.add(ok?"ok":"no"); } }
+function roundLabel(){
+  $("roundPill").textContent = sudden ? "⚡ RONDE PENENTU "+(round-MAIN_ROUNDS+1) : `RONDE ${round+1}/${MAIN_ROUNDS}`;
+}
+
+/* ---------------- DEBU & EFEK ---------------- */
+function dust(side){
+  const arena=$("arena");
+  for(let i=0;i<7;i++){
+    const d=document.createElement("span"); d.className="dust";
+    const s=8+Math.random()*14;
+    d.style.cssText=`width:${s}px;height:${s}px;left:calc(${side==="L"?"22%":"78%"} + ${(Math.random()-.5)*110}px);bottom:${10+Math.random()*30}px;--dx:${(Math.random()-.5)*50}px;animation-delay:${Math.random()*.15}s`;
+    arena.appendChild(d); setTimeout(()=>d.remove(),1200);
+  }
+}
+function banner(txt,cls){
+  const b=$("turnBanner");
+  b.textContent=txt; b.className=cls+" show";
+  clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove("show"),1500);
+}
+function cheer(side){ $(side==="L"?"teamL":"teamR").classList.add("cheer");
+  setTimeout(()=>$(side==="L"?"teamL":"teamR").classList.remove("cheer"),1500); }
+
+/* ---------------- KONFETI ---------------- */
+function confetti(){
+  const cols=["#ff5a45","#ffc93f","#2f8fe0","#5ad06e","#ff8ac2","#fffdf4"];
+  for(let i=0;i<110;i++){
+    const c=document.createElement("div"); c.className="confetti";
+    const s=6+Math.random()*9;
+    c.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s*1.4}px;background:${cols[i%6]};
+      animation-duration:${2.4+Math.random()*2.4}s;animation-delay:${Math.random()*1.2}s;
+      border-radius:${Math.random()>.5?"50%":"2px"}`;
+    document.body.appendChild(c); setTimeout(()=>c.remove(),5500);
+  }
+}
+
+/* ---------------- ALUR SOAL ---------------- */
+function showQuestion(){
+  locked=false;
+  const pair=SOAL[round], side=phase, q=side==="L"?pair.left:pair.right;
+  const nm=names[side];
+  const tb=$("turnBadge");
+  tb.className="turn-badge "+side;
+  tb.textContent=`🎯 GILIRAN ${nm}`;
+  $("topicChip").textContent="📌 "+pair.topic.toUpperCase();
+  $("qNum").innerHTML=`Soal ${Math.min(round+1,MAIN_ROUNDS)} dari ${MAIN_ROUNDS}${sudden?" (penentu)":""} • jawab via klik atau tombol <kbd class="hint">1–4</kbd>`;
+  $("qText").innerHTML=q.q;
+  const code=$("qCode");
+  if(q.code){ code.innerHTML=q.code; code.style.display="block"; } else code.style.display="none";
+  const box=$("opts"); box.innerHTML="";
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement("button"); b.className="opt";
+    b.innerHTML=`<span class="key">${"ABCD"[i]}</span><span>${o}</span>`;
+    b.onclick=()=>answer(i,b); box.appendChild(b);
+  });
+  const fb=$("feedback"); fb.className=""; fb.textContent="";
+  banner(`GILIRAN ${nm}!`, side);
+  roundLabel();
+}
+
+function answer(i,btn){
+  if(locked||over) return; locked=true;
+  const pair=SOAL[round], side=phase, q=side==="L"?pair.left:pair.right;
+  const isOk = i===q.a;
+  document.querySelectorAll("#opts .opt").forEach((b,ix)=>{
+    b.disabled=true;
+    if(ix===q.a) b.classList.add("right");
+  });
+  if(!isOk) btn.classList.add("wrong");
+  isOk ? sfx.ok() : sfx.no();
+
+  // pergeseran tali: kiri benar → ke kiri(-1), kiri salah → ke kanan(+1), dst.
+  const delta = side==="L" ? (isOk?-1:1) : (isOk?1:-1);
+  pos += delta;
+  setTimeout(()=>{ sfx.pull(); applyPos(true);
+    $("arena").classList.add(delta<0?"burst-l":"burst-r");
+    dust(delta<0?"L":"R");
+    setTimeout(()=>$("arena").classList.remove("burst-l","burst-r"),650);
+  },350);
+
+  if(isOk){ correct[side]++; cheer(side); }
+  setDot(side, Math.min(round,MAIN_ROUNDS-1), isOk);
+
+  const nm=names[side], other=names[side==="L"?"R":"L"];
+  const arahBenar = side==="L"?"KIRI ◀":"KANAN ▶";
+  const arahSalah = side==="L"?"KANAN ▶":"KIRI ◀";
+  const fb=$("feedback");
+  fb.className = isOk?"ok":"no";
+  fb.textContent = isOk
+    ? `✅ BENAR! Tarikan ${nm} menggeser tali ke ${arahBenar}!`
+    : `❌ MELESET! Tali malah tertarik ke ${arahSalah} milik ${other}…`;
+
+  setTimeout(nextStep, 1900);
+}
+
+function nextStep(){
+  if(over) return;
+  // menang instan
+  if(pos<=-WIN) return finish("L","garis");
+  if(pos>= WIN) return finish("R","garis");
+
+  if(phase==="L"){ phase="R"; showQuestion(); return; }
+  // giliran kanan selesai → ronde selesai
+  phase="L";
+  if(round < MAIN_ROUNDS-1){ round++; showQuestion(); return; }
+
+  // semua ronde utama selesai
+  if(pos!==0) return finish(pos<0?"L":"R","poin");
+
+  if(!sudden && round < SOAL.length-1){       // masuk ronde penentu
+    sudden=true; round++;
+    banner("SERI! RONDE PENENTU! ⚡","G");
+    setTimeout(showQuestion,1600); return;
+  }
+  if(sudden && round < SOAL.length-1){ round++; showQuestion(); return; }
+  finish(null,"seri");
+}
+
+/* ---------------- AKHIR PERMAINAN ---------------- */
+function finish(winner,how){
+  over=true; locked=true;
+  const arena=$("arena");
+  if(winner){
+    arena.classList.add("win");
+    $(winner==="L"?"teamL":"teamR").classList.add("winner");
+    $(winner==="L"?"teamR":"teamL").classList.add("loser");
+    pos = winner==="L" ? -WIN : WIN; applyPos(true);
+    sfx.win(); confetti();
+    $("endEmoji").textContent="🏆";
+    $("endTitle").textContent=`${names[winner]} MENANG!`;
+    $("endTitle").style.color = winner==="L"?"var(--red-d)":"var(--blue-d)";
+    $("endSub").textContent = how==="garis"
+      ? "Tali berhasil ditarik melewati garis lawan! Tarikan yang luar biasa 💪"
+      : `Soal habis — tali berakhir lebih dekat ke sisi ${names[winner]}!`;
+  }else{
+    arena.classList.add("draw");
+    $("endEmoji").textContent="🤝";
+    $("endTitle").textContent="SERI!";
+    $("endTitle").style.color="var(--ink)";
+    $("endSub").textContent="Kedua tim sama kuat — tali tetap di tengah. Coba lagi!";
+  }
+  $("statNameL").textContent=names.L; $("statNameR").textContent=names.R;
+  $("statL").textContent=`${correct.L} benar`; $("statR").textContent=`${correct.R} benar`;
+  setTimeout(()=>$("endOverlay").classList.remove("hidden"), 1100);
+}
+
+/* ---------------- MULAI / RESET ---------------- */
+function startGame(){
+  names.L=($("nameL").value.trim()||"MERAH").toUpperCase();
+  names.R=($("nameR").value.trim()||"BIRU").toUpperCase();
+  $("hudNameL").textContent=names.L; $("hudNameR").textContent=names.R;
+  $("capL").textContent=`◀ ${names.L} −5`; $("capR").textContent=`${names.R} +5 ▶`;
+  $("tagL").textContent=names.L; $("tagR").textContent=names.R;
+  pos=0; round=0; phase="L"; sudden=false; over=false; correct={L:0,R:0};
+  buildDots(); roundLabel(); applyPos(false);
+  $("arena").className=""; $("endOverlay").classList.add("hidden"); $("startOverlay").classList.add("hidden");
+  banner("SIAP… 🪢 TARIK!","G");
+  setTimeout(showQuestion, 1400);
+}
+
+$("btnStart").onclick = startGame;
+$("btnReplay").onclick = startGame;
+$("btnRename").onclick = ()=>{ $("endOverlay").classList.add("hidden"); $("arena").className=""; $("startOverlay").classList.remove("hidden"); };
+$("btnRestart").onclick = ()=>{ if(confirm("Ulang permainan dari awal?")){ $("arena").className=""; $("endOverlay").classList.add("hidden"); $("startOverlay").classList.remove("hidden"); } };
+$("btnSound").onclick = function(){ muted=!muted; this.textContent=muted?"🔇":"🔊"; };
+
+document.addEventListener("keydown",e=>{
+  if(!$("startOverlay").classList.contains("hidden") && e.key==="Enter"){ startGame(); return; }
+  const map={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3};
+  const k=e.key.toLowerCase();
+  if(k in map && !locked && !over){
+    const btns=document.querySelectorAll("#opts .opt");
+    if(btns[map[k]]) btns[map[k]].click();
+  }
+});
+
+measure(); buildDots();
+</script>
+</body>
+</html>
