@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PUZZLE RUSH – Local Multiplayer</title>
+<style>
+:root{--bg:#14132b;--bg2:#24235a;--card:#25244f;--tx:#fff;--mut:#b4b3e0;--ac:#ffd23f;--bd:#0a0a1a}
+[data-theme=light]{--bg:#fff4d6;--bg2:#ffdf8a;--card:#fff;--tx:#1b1b3a;--mut:#58587f;--bd:#1b1b3a}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:"Trebuchet MS",Verdana,sans-serif;background:var(--bg);color:var(--tx);overflow:hidden;user-select:none;touch-action:manipulation}
+.scr{display:none;height:100%;padding:2vh 3vw;flex-direction:column;align-items:center;justify-content:center;gap:2.5vh;text-align:center;background:radial-gradient(circle at 50% 0,var(--bg2),var(--bg) 70%);overflow:auto}
+.scr.on{display:flex}
+h1{font-size:clamp(44px,10vw,130px);color:var(--ac);text-shadow:.045em .045em 0 #e63946;line-height:1}
+h2{font-size:clamp(28px,4.5vw,58px);color:var(--ac);text-shadow:.04em .04em 0 var(--bd)}
+.sub{font-size:clamp(16px,2vw,28px);color:var(--mut);max-width:900px}
+.btn{font:inherit;font-weight:900;cursor:pointer;border:4px solid var(--bd);border-radius:16px;background:var(--ac);color:#1b1b3a;padding:.45em 1.1em;font-size:clamp(18px,2.4vw,34px);box-shadow:0 6px 0 var(--bd)}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 var(--bd)}
+.btn.s{background:var(--card);color:var(--tx)}
+.btn.sel{background:var(--ac);color:#1b1b3a}
+.btn.sm{font-size:clamp(14px,1.6vw,22px);padding:.3em .8em;box-shadow:0 4px 0 var(--bd)}
+.row{display:flex;gap:2vw;flex-wrap:wrap;justify-content:center}
+#names{display:flex;gap:1.5vw;flex-wrap:wrap;justify-content:center}
+#names input{font:inherit;font-size:clamp(18px,2.4vw,32px);font-weight:700;padding:.5em .7em;width:min(24vw,300px);min-width:200px;border-radius:14px;border:5px solid var(--c);background:var(--card);color:var(--tx);text-align:center}
+.dg{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:2vw;width:min(900px,92vw)}
+.dg .btn{padding:.7em .5em;text-align:center}
+.dg small{display:block;font-size:.5em;font-weight:600;opacity:.8;margin-top:.3em}
+#ctl{position:fixed;top:8px;right:8px;z-index:20;display:flex;gap:8px}
+#cf{position:fixed;inset:0;pointer-events:none;z-index:5}
+#cdn{position:fixed;inset:0;z-index:15;display:none;align-items:center;justify-content:center;background:rgba(10,10,30,.8);font-size:min(40vw,45vh);font-weight:900;color:var(--ac);text-shadow:.05em .05em 0 #e63946}
+#cdn.on{display:flex}
+#arena{justify-content:flex-start;padding:1.2vh 1.2vw;gap:1.2vh}
+#bar{width:100%;display:flex;gap:1.5vw;align-items:center;justify-content:space-between;padding-right:130px}
+.pill{background:var(--card);border:3px solid var(--bd);border-radius:14px;padding:.2em .8em;font-size:clamp(16px,2.2vw,32px);font-weight:900}
+#qbox{width:100%;background:var(--ac);color:#1b1b3a;border:5px solid var(--bd);border-radius:20px;padding:1.2vh 2vw;box-shadow:0 6px 0 var(--bd)}
+#qcat{font-size:clamp(13px,1.5vw,22px);font-weight:800;opacity:.75}
+#qtxt{font-size:clamp(24px,4.2vw,64px);font-weight:900;line-height:1.15}
+#cards{flex:1;min-height:0;width:100%;display:grid;gap:1vw}
+.pc{--c:#fff;display:flex;flex-direction:column;gap:.8vh;min-height:0;background:var(--card);border:5px solid var(--c);border-radius:18px;padding:1vh 1vw}
+.pc.ok{background:color-mix(in srgb,var(--c) 22%,var(--card))}
+.pc.fast{animation:glow .9s 3}
+@keyframes glow{50%{box-shadow:0 0 40px 10px var(--c)}}
+.pc.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.nm{background:var(--c);color:#14132b;border-radius:10px;padding:.1em .6em;font-weight:900;font-size:clamp(16px,2vw,30px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cb{font-weight:900;font-size:clamp(14px,1.8vw,26px);min-height:1.2em}
+.cb.pop{animation:pop .6s}
+@keyframes pop{30%{transform:scale(1.8) rotate(-6deg);color:#ff8a00}}
+.sc{font-size:clamp(30px,4.2vw,64px);font-weight:900;color:var(--c);line-height:1}
+.ans{background:#fff;color:#14132b;border:4px solid var(--bd);border-radius:12px;font-size:clamp(26px,3.6vw,56px);font-weight:900;padding:.05em .3em;min-height:1.3em;text-align:right}
+.st{font-size:clamp(12px,1.35vw,20px);color:var(--mut);min-height:2.4em;line-height:1.2}
+.kp{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:.8vh .5vw}
+.ac2{display:grid;grid-template-columns:1fr 1.4fr;gap:.5vw;height:clamp(40px,8vh,80px)}
+.k{font:inherit;font-weight:900;font-size:clamp(20px,2.8vw,42px);border:3px solid var(--bd);border-radius:12px;background:var(--bg2);color:var(--tx);cursor:pointer;box-shadow:0 4px 0 var(--bd);min-height:0}
+.k:active{transform:translateY(3px);box-shadow:0 1px 0 var(--bd)}
+.k.h{background:#6c63ff;color:#fff;font-size:clamp(14px,1.8vw,26px)}
+.k.ok{background:var(--c);color:#14132b;font-size:clamp(16px,2.2vw,32px)}
+table{border-collapse:separate;border-spacing:0 .8vh;font-size:clamp(14px,1.9vw,28px);font-weight:700}
+th{color:var(--mut);font-size:.7em;padding:0 .8em}
+td{background:var(--card);padding:.4em .9em}
+td:first-child{border-radius:12px 0 0 12px}td:last-child{border-radius:0 12px 12px 0}
+@media(max-width:900px){#cards.c3,#cards.c4{grid-template-columns:repeat(2,1fr)!important}}
+</style></head><body>
+<canvas id="cf"></canvas>
+<div id="ctl"><button class="btn s sm" id="bm">🔊</button><button class="btn s sm" id="bt">🌙</button></div>
+<div id="cdn"></div>
+
+<section class="scr on" id="home">
+<h1>PUZZLE<br>RUSH</h1>
+<p class="sub">Adu cepat dan tajam berpikir! 2–4 pemain mengerjakan soal yang sama di satu layar. Jawab benar, kejar bonus tercepat, dan bangun combo selama 3 menit.</p>
+<div class="row"><button class="btn big" id="play">▶ Main</button><button class="btn s big" id="lb1">🏆 Leaderboard</button></div>
+</section>
+
+<section class="scr" id="setup">
+<h2>Berapa pemain?</h2>
+<div class="row" id="cnt"></div>
+<div id="names"></div>
+<div class="row"><button class="btn s" data-go="home">← Kembali</button><button class="btn big" id="tod">Lanjut: pilih level</button></div>
+</section>
+
+<section class="scr" id="diff">
+<h2>Pilih tingkat kesulitan</h2>
+<div class="dg" id="dgrid"></div>
+<button class="btn s" data-go="setup">← Kembali</button>
+</section>
+
+<section class="scr" id="arena">
+<div id="bar"><div class="pill">⏱ <span id="tm">3:00</span></div><div class="pill" id="qn"></div><div class="pill" id="qt"></div><button class="btn s sm" id="quit">✕ Keluar</button></div>
+<div id="qbox"><div id="qcat">Bersiap…</div><div id="qtxt">…</div></div>
+<div id="cards"></div>
+</section>
+
+<section class="scr" id="result">
+<h2 id="win"></h2>
+<table id="rt"></table>
+<div class="row"><button class="btn big" id="rem">🔁 Rematch</button><button class="btn s" id="newg">Game Baru</button><button class="btn s" id="lb2">🏆 Leaderboard</button></div>
+</section>
+
+<section class="scr" id="lbs">
+<h2>🏆 Leaderboard</h2>
+<table id="lbt"></table>
+<div class="row"><button class="btn s" data-go="home">← Beranda</button><button class="btn s" id="lbclr">Hapus rekor</button></div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id),R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a,pick=a=>a[R(0,a.length-1)];
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const COL=['#ff4d6d','#2ec4ff','#ffd23f','#3ddc84'],DN=['Easy','Medium','Hard','Expert'];
+const DD=['Soal dasar, angka kecil','Angka lebih besar, 2 langkah','Pola dan hitungan menantang','Angka besar, butuh logika tajam'];
+const CATS=['Number Logic','Pattern Recognition','Number Puzzle','Math Challenge','Logic Challenge'];
+const ST=[['Berapa kali angka 7 muncul saat menulis semua bilangan dari 1 sampai 100?',20,'Hitung digit satuan dan digit puluhan.'],['Jam dinding berdentang sebanyak angka jam. Berapa total dentang dari pukul 1 sampai pukul 12?',78,'Jumlahkan 1+2+…+12.'],['Siput memanjat tembok 10 m. Siang naik 3 m, malam turun 2 m. Pada hari ke berapa ia sampai puncak?',8,'Di hari terakhir ia tidak sempat turun lagi.'],['Berapa kali angka 1 muncul saat menulis semua bilangan dari 1 sampai 20?',12,'Ingat, 11 punya dua angka 1.'],['3 mesin membuat 3 barang dalam 3 menit. Berapa menit 100 mesin membuat 100 barang?',3,'Tiap mesin membuat 1 barang dalam 3 menit.']];
+/* Generator soal: jawaban dihitung langsung dari parameter, jadi selalu valid & tidak ambigu */
+const G=[[
+d=>{const a=R(2+d*2,9+d*4),x=R(2,9+d*6),b=R(1,15*(d+1));return[`${a} × ? + ${b} = ${a*x+b}`,x,`Kurangi ${b}, lalu bagi ${a}.`]},
+d=>{const n=R(10**(d+1),10**(d+2)-1);return[`Berapa jumlah semua angka (digit) dari bilangan ${n}?`,[...''+n].reduce((s,c)=>s+ +c,0),'Jumlahkan tiap digit satu per satu.']},
+d=>{const a=R(1,20*(d+1)),b=a+R(10,25*(d+1));return[`Ada berapa bilangan genap dari ${a} sampai ${b} (keduanya ikut dihitung)?`,Math.floor(b/2)-Math.floor((a-1)/2),'Genap muncul tiap 2 bilangan berurutan.']},
+d=>{const k=R(2,5+d*2),y=R(2,10+d*8),b=R(2,30*(d+1));return[`(? ÷ ${k}) + ${b} = ${y+b}`,k*y,`Kurangi ${b} dulu, lalu kalikan ${k}.`]},
+d=>{let n,v;do{n=d<2?R(21,98):R(121,998);v=+[...''+n].reverse().join('')}while(n===v||n%10===0);return[`Balik urutan angka ${n}. Berapa selisih positif antara ${n} dan kebalikannya?`,Math.abs(n-v),'Kurangi bilangan besar dengan yang kecil.']}
+],[
+d=>{const s=R(2,5+d*4)*(d>1&&Math.random()<.5?-1:1),a=R(d>1?20:1,15+d*15),q=[0,1,2,3,4].map(i=>a+s*i);return[q.join(', ')+', ?',a+s*5,`Selisih tiap suku selalu ${s>0?'+':''}${s}.`]},
+d=>{const k=R(2,3+(d>1?1:0)),a=R(1,4),q=[0,1,2,3].map(i=>a*k**i);return[q.join(', ')+', ?',a*k**4,`Tiap suku dikali ${k}.`]},
+d=>{const a=R(1,9),f=R(1,3),g=R(1,2+(d>>1));let v=a,df=f;const q=[a];for(let i=0;i<4;i++){v+=df;df+=g;q.push(v)}return[q.join(', ')+', ?',v+df,`Selisihnya bertambah ${g} setiap langkah.`]},
+d=>{const q=[R(1,4+d*3),R(1,5+d*3)];for(let i=0;i<4;i++)q.push(q[i]+q[i+1]);return[q.join(', ')+', ?',q[4]+q[5],'Tiap suku = jumlah dua suku sebelumnya.']},
+d=>{const v=R(1,2+d),p=R(3+d,8+d*2),q=[v];for(let i=0;i<5;i++)q.push(i%2?q[i]*2:q[i]+p);return[q.slice(0,5).join(', ')+', ?',q[5],`Pola bergantian: tambah ${p}, lalu kali 2.`]}
+],[
+d=>{const b=R(3+d*5,20+d*30),a=b+R(2,15+d*10);return[`Dua bilangan berjumlah ${a+b} dan selisihnya ${a-b}. Berapa bilangan yang lebih besar?`,a,'Besar = (jumlah + selisih) ÷ 2.']},
+d=>{const c=[3,5,7,9][d],n=R(5,30+d*40);return[`Jumlah ${c} bilangan bulat berurutan adalah ${c*n+c*(c-1)/2}. Berapa bilangan terbesarnya?`,n+c-1,'Bilangan tengah = jumlah ÷ banyak bilangan.']},
+d=>{const x=R(3,12+d*10),k=R(2,5+d),c=R(1,20+d*20);return[`Aku memikirkan sebuah bilangan. Jika dikali ${k} lalu ditambah ${c}, hasilnya ${x*k+c}. Bilangan itu?`,x,'Balik langkahnya: kurangi, lalu bagi.']},
+d=>{const a=R(2,9+d*4),b=a+R(1,8+d*3);return[`Dua bilangan bulat positif berjumlah ${a+b} dan hasil kalinya ${a*b}. Berapa bilangan yang lebih besar?`,b,`Cari dua bilangan yang jika dikali menghasilkan ${a*b}.`]},
+d=>{const[a,b]=pick([[4,6],[6,8],[9,12],[12,18],[8,12],[15,20],[14,21],[16,24],[18,24],[20,30],[25,40],[21,35]].slice(0,4+d*3));return[`Berapa bilangan terkecil yang habis dibagi ${a} dan ${b}?`,a*b/gcd(a,b),'Cari KPK dari kedua bilangan.']}
+],[
+d=>{if(d<2){const a=R(2,20),b=R(2,9),c=R(2,9),e=R(1,a);return[`${a} + ${b} × ${c} − ${e} = ?`,a+b*c-e,'Kalikan dulu sebelum menjumlah atau mengurangi.']}const a=R(2,12),b=R(2,12),c=R(2,9),e=R(2,9),f=R(2,9);return[`(${a} + ${b}) × ${c} − ${e} × ${f} = ?`,(a+b)*c-e*f,'Kurung dulu, lalu perkalian, terakhir pengurangan.']},
+d=>{const N=20*R(1,5+d*8),p=pick([10,20,25,50,75]);return[`Berapa ${p}% dari ${N}?`,N*p/100,`${p}% sama dengan ${p}/100.`]},
+d=>{if(d<2){const a=R(2,9+d*3),b=R(1,20);return[`${a}² + ${b} = ?`,a*a+b,`${a}² = ${a} × ${a}.`]}const a=R(3,9),b=R(2,12);return[`${a}³ + ${b}² = ?`,a**3+b*b,`${a}³ = ${a} × ${a} × ${a}.`]},
+d=>{const a=R(50,100*(d+1)),b=R(3,9+d);return[`Berapa sisa jika ${a} dibagi ${b}?`,a%b,`Cari kelipatan ${b} terdekat di bawah ${a}.`]},
+d=>{const n=R(3,5),m=R(20+d*10,60+d*20),v=[];let s=0;for(let i=0;i<n-1;i++){const x=m+R(-4,4);v.push(x);s+=x}return[`Rata-rata ${n} bilangan adalah ${m}. ${n-1} bilangan di antaranya: ${v.join(', ')}. Berapa bilangan terakhir?`,n*m-s,`Total semua = ${n} × ${m}.`]}
+],[
+d=>{const n=R(4+d*2,8+d*5);return[`${n} orang saling berjabat tangan, setiap pasang tepat satu kali. Berapa total jabat tangan?`,n*(n-1)/2,'Tiap orang berjabat dengan (n−1) orang, lalu bagi 2.']},
+d=>{const a=R(3,10+d*10),b=R(3,10+d*10);return[`Dina berada di urutan ke-${a} dari depan dan ke-${b} dari belakang dalam antrean. Berapa jumlah orang dalam antrean?`,a+b-1,'Dina terhitung dua kali, kurangi 1.']},
+d=>{const k=R(2,6),n=R(5,15+d*15);return[`Jalan lurus ${k*n} meter ditanami pohon setiap ${k} meter, termasuk di kedua ujung. Berapa pohon yang dibutuhkan?`,n+1,'Banyak jarak + 1.']},
+d=>{const n=R(10,60*(d+1));return[`Hari ini Senin. ${n} hari lagi jatuh pada hari ke berapa? (Senin = 1, Selasa = 2, … Minggu = 7)`,n%7+1,'Hari berulang tiap 7. Pakai sisa pembagian.']},
+()=>pick(ST)
+]];
+function genQ(){
+  if(!S.bag.length)S.bag=shuffle([0,1,2,3,4]);
+  const c=S.bag.pop();
+  for(let i=0;i<30;i++){const[t,a,h]=pick(G[c])(S.d);if(!S.seen.has(t)||i===29){S.seen.add(t);return{cat:CATS[c],t,a,h}}}
+}
+/* Audio */
+let AC,MG,mute=false,mi,ms=0;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();MG=AC.createGain();MG.gain.value=mute?0:1;MG.connect(AC.destination)}catch(e){}}if(AC&&AC.state==='suspended')AC.resume()}
+function tone(f,t0,d,ty,v){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain(),T=AC.currentTime+t0;o.type=ty||'square';o.frequency.value=f;g.gain.setValueAtTime(v||.12,T);g.gain.exponentialRampToValueAtTime(.001,T+d);o.connect(g);g.connect(MG);o.start(T);o.stop(T+d+.02)}
+const SF={ok:[[660,0,.1],[880,.1,.2]],bad:[[200,0,.2,'sawtooth'],[140,.15,.25,'sawtooth']],combo:[[523,0,.1],[659,.1,.1],[784,.2,.1],[1047,.3,.3]],fast:[[1200,0,.08],[1500,.08,.14]],win:[[523,0,.15],[659,.15,.15],[784,.3,.15],[1047,.45,.5],[784,.6,.15],[1047,.75,.6]],cd:[[600,0,.2]],go:[[900,0,.5]],hint:[[500,0,.12,'triangle']],k:[[400,0,.04,'triangle']]};
+function sfx(n){ac();(SF[n]||[]).forEach(a=>tone(a[0],a[1],a[2],a[3]))}
+const NT=[262,330,392,330,294,370,440,370,262,330,392,523,392,330,294,247];
+function music(on){clearInterval(mi);if(on){ac();mi=setInterval(()=>tone(NT[ms++%16],0,.25,'triangle',.05),300)}}
+$('bm').onclick=()=>{ac();mute=!mute;if(MG)MG.gain.value=mute?0:1;$('bm').textContent=mute?'🔇':'🔊'};
+$('bt').onclick=()=>{const l=document.body.parentElement.dataset.theme!=='light';document.documentElement.dataset.theme=l?'light':'dark';$('bt').textContent=l?'☀️':'🌙'};
+/* Navigasi */
+let scr='home',S={n:2,names:[],d:0,pl:[],bag:[],seen:new Set(),mid:0,run:false,lock:false,q:null,time:180,qt:45,first:-1,qn:0,iv:null};
+function go(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));scr=id;if(id==='lbs')drawLB()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){ac();go(b.dataset.go)}});
+$('play').onclick=()=>{ac();go('setup')};
+$('lb1').onclick=$('lb2').onclick=()=>go('lbs');
+function drawSetup(){
+  $('cnt').innerHTML=[2,3,4].map(n=>`<button class="btn ${n===S.n?'sel':'s'}" data-n="${n}">${n} Pemain</button>`).join('');
+  const old=[...document.querySelectorAll('#names input')].map(i=>i.value);
+  $('names').innerHTML=Array.from({length:S.n},(_,i)=>`<input maxlength="12" style="--c:${COL[i]}" placeholder="Pemain ${i+1}" value="${esc(old[i]||'')}">`).join('');
+}
+$('cnt').onclick=e=>{const b=e.target.closest('[data-n]');if(b){S.n=+b.dataset.n;drawSetup()}};
+$('tod').onclick=()=>{S.names=[...document.querySelectorAll('#names input')].map((x,i)=>x.value.trim()||'Pemain '+(i+1));go('diff')};
+$('dgrid').innerHTML=DN.map((n,i)=>`<button class="btn" data-d="${i}" style="background:${['#3ddc84','#2ec4ff','#ffd23f','#ff4d6d'][i]}">${n}<small>${DD[i]}</small></button>`).join('');
+$('dgrid').onclick=e=>{const b=e.target.closest('[data-d]');if(b){S.d=+b.dataset.d;start()}};
+$('newg').onclick=()=>go('setup');
+$('rem').onclick=start;
+$('quit').onclick=()=>{endRun();go('home')};
+/* Pertandingan */
+function mkCards(){
+  const c=$('cards');c.className='c'+S.n;c.style.gridTemplateColumns=`repeat(${S.n},1fr)`;
+  c.innerHTML=S.pl.map((p,i)=>`<div class="pc" id="pc${i}" style="--c:${p.color}"><div class="ph"><span class="nm">${esc(p.name)}</span><span class="cb" id="cb${i}"></span></div><div class="sc" id="sc${i}">0</div><div class="ans" id="an${i}">&nbsp;</div><div class="st" id="st${i}">Siap!</div><div class="kp">${['1','2','3','4','5','6','7','8','9','-','0','⌫'].map(k=>`<button class="k" data-p="${i}" data-k="${k}">${k}</button>`).join('')}</div><div class="ac2"><button class="k h" data-p="${i}" data-k="H">💡 Hint −25</button><button class="k ok" data-p="${i}" data-k="OK">KIRIM ✓</button></div></div>`).join('');
+}
+$('cards').addEventListener('click',e=>{const b=e.target.closest('button');if(b)press(+b.dataset.p,b.dataset.k)});
+function later(fn,ms){const id=S.mid;setTimeout(()=>{if(id===S.mid)fn()},ms)}
+function endRun(){S.run=false;S.mid++;clearInterval(S.iv);music(false);$('cdn').classList.remove('on')}
+function start(){
+  ac();endRun();
+  S.pl=S.names.slice(0,S.n).map((n,i)=>({name:n,color:COL[i],score:0,combo:0,best:0,ok:0,bad:0,hints:0,fast:0,done:false,hinted:false,in:''}));
+  Object.assign(S,{bag:[],seen:new Set(),time:180,qn:0,lock:false,first:-1,q:null});
+  go('arena');mkCards();S.pl.forEach((_,i)=>upd(i));
+  $('qcat').textContent='Bersiap…';$('qtxt').textContent='…';$('tm').textContent='3:00';$('qn').textContent=DN[S.d];$('qt').textContent='';
+  music(true);
+  const id=S.mid,cd=$('cdn');let n=3;
+  const step=()=>{if(id!==S.mid)return;if(n>0){cd.textContent=n;cd.classList.add('on');sfx('cd');n--;setTimeout(step,1000)}else{cd.textContent='GO!';sfx('go');setTimeout(()=>{cd.classList.remove('on')},600);S.run=true;nextQ();S.iv=setInterval(tick,1000)}};
+  step();
+}
+function upd(i){const p=S.pl[i];$('sc'+i).textContent=p.score;$('an'+i).innerHTML=p.in===''?'&nbsp;':p.in;$('cb'+i).textContent=p.combo>=2?'🔥 Combo '+p.combo:(p.combo?'Combo '+p.combo+'/3':'')}
+function nextQ(){
+  if(!S.run)return;
+  S.q=genQ();S.qt=45;S.lock=false;S.first=-1;S.qn++;
+  S.pl.forEach((p,i)=>{p.done=false;p.in='';p.hinted=false;upd(i);$('st'+i).textContent='Jawab sekarang!';$('pc'+i).classList.remove('ok','fast')});
+  $('qcat').textContent=S.q.cat;$('qtxt').textContent=S.q.t;$('qn').textContent='Soal #'+S.qn+' · '+DN[S.d];$('qt').textContent='⏳ '+S.qt;
+}
+function tick(){
+  if(!S.run)return;
+  S.time--;$('tm').textContent=Math.floor(S.time/60)+':'+String(S.time%60).padStart(2,'0');
+  if(S.time<=0){finish();return}
+  if(!S.lock){S.qt--;$('qt').textContent='⏳ '+S.qt;
+    if(S.qt<=0){S.lock=true;S.pl.forEach((p,i)=>{if(!p.done){p.combo=0;upd(i);$('st'+i).textContent='Waktu soal habis. Jawaban: '+S.q.a}});later(nextQ,2500)}}
+}
+function press(i,k){
+  if(!S.run||S.lock)return;const p=S.pl[i];if(p.done)return;ac();
+  if(k==='⌫')p.in=p.in.slice(0,-1);
+  else if(k==='-'){if(p.in==='')p.in='-'}
+  else if(k==='H'){if(!p.hinted){p.hinted=true;p.hints++;p.score=Math.max(0,p.score-25);$('st'+i).textContent='💡 '+S.q.h;sfx('hint')}}
+  else if(k==='OK')return submit(i);
+  else if(p.in.replace('-','').length<8)p.in+=k;
+  if(k!=='H')sfx('k');
+  upd(i);
+}
+function submit(i){
+  const p=S.pl[i];if(p.in===''||p.in==='-')return;
+  const card=$('pc'+i);
+  if(parseInt(p.in,10)===S.q.a){
+    p.done=true;p.ok++;p.combo++;p.best=Math.max(p.best,p.combo);p.score+=100;
+    let msg='✓ Benar! +100',sn='ok';
+    if(S.first<0){S.first=i;p.fast++;p.score+=50;msg+=' · ⚡ Tercepat +50';card.classList.add('fast');sn='fast'}
+    if(p.combo%3===0){p.score+=50;msg+=' · 🔥 Combo +50';sn='combo';const cb=$('cb'+i);cb.classList.remove('pop');void cb.offsetWidth;cb.classList.add('pop')}
+    card.classList.add('ok');$('st'+i).textContent=msg+' — menunggu pemain lain';sfx(sn);upd(i);
+    if(S.pl.every(x=>x.done)){S.lock=true;later(nextQ,1500)}
+  }else{
+    p.bad++;p.combo=0;p.in='';$('st'+i).textContent='✗ Salah, coba lagi!';sfx('bad');upd(i);
+    card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');
+  }
+}
+/* Hasil & leaderboard */
+let LB=[];try{LB=JSON.parse(localStorage.getItem('puzzlerush_lb')||'[]')}catch(e){}
+function saveLB(){try{localStorage.setItem('puzzlerush_lb',JSON.stringify(LB))}catch(e){}}
+function drawLB(){
+  $('lbt').innerHTML=LB.length?'<tr><th></th><th>Nama</th><th>Skor</th><th>Level</th></tr>'+LB.map((r,i)=>`<tr><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${esc(r.name)}</td><td>${r.score}</td><td>${DN[r.d]}</td></tr>`).join(''):'<tr><td>Belum ada rekor. Mainkan satu pertandingan dulu!</td></tr>';
+}
+$('lbclr').onclick=()=>{LB=[];saveLB();drawLB()};
+function finish(){
+  endRun();
+  S.pl.forEach(p=>LB.push({name:p.name,score:p.score,d:S.d}));
+  LB.sort((a,b)=>b.score-a.score);LB=LB.slice(0,10);saveLB();
+  const r=[...S.pl].sort((a,b)=>b.score-a.score),top=r[0].score,w=r.filter(p=>p.score===top);
+  $('win').textContent=w.length>1?'🤝 Seri: '+w.map(p=>p.name).join(' & ')+'!':'🏆 '+w[0].name+' menang!';
+  $('rt').innerHTML='<tr><th>Peringkat</th><th>Pemain</th><th>Skor</th><th>Benar</th><th>Salah</th><th>Combo terbaik</th><th>Tercepat</th><th>Hint</th></tr>'+r.map(p=>`<tr><td>#${1+r.filter(x=>x.score>p.score).length}</td><td style="color:${p.color}">${esc(p.name)}</td><td>${p.score}</td><td>${p.ok}</td><td>${p.bad}</td><td>${p.best}</td><td>${p.fast}×</td><td>${p.hints}</td></tr>`).join('');
+  go('result');sfx('win');confetti();
+}
+function confetti(){
+  const c=$('cf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const P=Array.from({length:160},()=>({x:Math.random()*c.width,y:-Math.random()*c.height,v:2+Math.random()*4,s:6+Math.random()*8,c:`hsl(${Math.random()*360},90%,60%)`}));let f=0;
+  (function a(){x.clearRect(0,0,c.width,c.height);if(++f>420||scr!=='result')return;P.forEach(p=>{p.y+=p.v;p.x+=Math.sin(p.y/30);x.fillStyle=p.c;x.fillRect(p.x,p.y,p.s,p.s*.6)});requestAnimationFrame(a)})();
+}
+drawSetup();
+</script></body></html>
